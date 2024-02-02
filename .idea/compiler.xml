@@ -2,12 +2,25 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="r-pan-server" />
         <module name="r-pan-core" />
+        <module name="r-pan-web" />
+      </profile>
+      <profile name="Annotation profile for r-pan-server" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/mapstruct/mapstruct-processor/1.5.2.Final/mapstruct-processor-1.5.2.Final.jar" />
+          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/mapstruct/mapstruct/1.5.2.Final/mapstruct-1.5.2.Final.jar" />
+          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar" />
+          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+        </processorPath>
+        <module name="r-pan-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
@@ -20,6 +33,7 @@
       <module name="r-pan-framework" options="-parameters" />
       <module name="r-pan-parent" options="-parameters" />
       <module name="r-pan-server" options="-parameters" />
+      <module name="r-pan-web" options="-parameters" />
       <module name="untitled" options="-parameters" />
     </option>
   </component>

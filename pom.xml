@@ -162,7 +162,7 @@
                 <version>${rocketmq.version}</version>
             </dependency>
 
-            <!--caffeine：做本地缓存，是当前业界对于本地缓存的最好的解决方案-->
+            <!--caffeine：做本地缓存，是当前业界对于本地缓存的最好解决方案-->
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
