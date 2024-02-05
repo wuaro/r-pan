@@ -8,9 +8,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="r-pan-core" />
+        <module name="r-pan-swagger2" />
         <module name="r-pan-web" />
       </profile>
-      <profile name="Annotation profile for r-pan-server" enabled="true">
+      <profile name="Annotation profile for r-pan-parent" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -24,16 +25,25 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
+      <module name="framework" target="1.8" />
+      <module name="r-pan-core1" target="1.8" />
+      <module name="r-pan-server1" target="1.8" />
+      <module name="server" target="1.8" />
       <module name="untitled" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="framework" options="-parameters" />
       <module name="r-pan-core" options="-parameters" />
+      <module name="r-pan-core1" options="-parameters" />
       <module name="r-pan-framework" options="-parameters" />
       <module name="r-pan-parent" options="-parameters" />
       <module name="r-pan-server" options="-parameters" />
+      <module name="r-pan-server1" options="-parameters" />
+      <module name="r-pan-swagger2" options="-parameters" />
       <module name="r-pan-web" options="-parameters" />
+      <module name="server" options="-parameters" />
       <module name="untitled" options="-parameters" />
     </option>
   </component>

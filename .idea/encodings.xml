@@ -5,11 +5,24 @@
     <file url="file://$PROJECT_DIR$/framework/core/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/framework/untitled/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework/swagger2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework/swagger2/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/web/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/framework/web/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/core1/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/core1/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/swagger2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/untitled/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/web/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/framework1/web/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server1/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/server1/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
