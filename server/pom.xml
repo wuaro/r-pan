@@ -23,6 +23,11 @@
             <artifactId>r-pan-web</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.wuaro.pan</groupId>
+            <artifactId>r-pan-swagger2</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

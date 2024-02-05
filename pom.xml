@@ -15,6 +15,10 @@
     <version>1.0</version>
     <name>r-pan-parent</name>
     <description>R Pan项目服务端</description>
+    <modules>
+        <module>framework</module>
+        <module>server</module>
+    </modules>
     <packaging>pom</packaging>
 
     <properties>

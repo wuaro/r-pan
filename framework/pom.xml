@@ -9,6 +9,8 @@
     </parent>
     <modules>
         <module>web</module>
+        <module>swagger2</module>
+        <module>core</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
 
