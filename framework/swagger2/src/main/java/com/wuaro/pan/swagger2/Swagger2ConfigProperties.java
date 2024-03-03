@@ -10,8 +10,23 @@ import org.springframework.stereotype.Component;
  * swagger2配置属性实体
  */
 
+/**
+ * 注解@Data ： 注在类上，提供类的get、set、equals、hashCode、canEqual、toString方法
+ * 注解@AllArgsConstructor ： 注在类上，提供类的全参构造
+ * 注解@NoArgsConstructor ： 注在类上，提供类的无参构造
+ * 注解@Setter ： 注在属性上，提供 set 方法
+ * 注解@Getter ： 注在属性上，提供 get 方法
+ * 注解@EqualsAndHashCode ： 注在类上，提供对应的 equals 和 hashCode 方法
+ * 注解@Log4j/@Slf4j ： 注在类上，提供对应的 Logger 对象，变量名为 log
+ */
 @Data
+/**
+ * 将一个普通类注入Spring容器
+ * 普通类也就是：不是controller层也不是service...
+ * 总是就是不能通过业务进行归类的类，就可以用@Component注入Spring容器
+ */
 @Component
+
 @ConfigurationProperties(prefix = "swagger2")
 public class Swagger2ConfigProperties {
 
@@ -19,7 +34,7 @@ public class Swagger2ConfigProperties {
     private boolean show = true;
     //组名称
     private String groupName = "r-pan";
-    //基础扫描路径
+    //基础扫描路径（这里是使用com.wuaro.pan.core.constants.RPanConstants常量类中事先配置好的路径）
     private String basePackage = RPanConstants.BASE_COMPONENT_SCAN_PATH;
     //title
     private String title = "r-pan-server";

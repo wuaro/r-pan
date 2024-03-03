@@ -10,6 +10,7 @@
         <module name="r-pan-core" />
         <module name="r-pan-swagger2" />
         <module name="r-pan-web" />
+        <module name="r-pan-distribution" />
       </profile>
       <profile name="Annotation profile for r-pan-parent" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -37,6 +38,7 @@
       <module name="framework" options="-parameters" />
       <module name="r-pan-core" options="-parameters" />
       <module name="r-pan-core1" options="-parameters" />
+      <module name="r-pan-distribution" options="-parameters" />
       <module name="r-pan-framework" options="-parameters" />
       <module name="r-pan-parent" options="-parameters" />
       <module name="r-pan-server" options="-parameters" />
