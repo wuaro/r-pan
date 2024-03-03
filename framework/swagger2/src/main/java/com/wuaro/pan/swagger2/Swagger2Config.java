@@ -16,7 +16,15 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * 接口文档配置类
+ * API接口文档的配置类
+ * swagger2组件的配置类
+ */
+
+
+/**
+ * 注解@SpringBootConfiguration注解是类级别的注解，表示该类提供应用程序配置。
+ * 当我们用@SpringBootConfiguration标记一个类时，就意味着该类提供了@Bean定义方法。
+ * Spring 容器处理配置类来为我们的应用程序实例化和配置 bean。
  */
 @SpringBootConfiguration
 @EnableSwagger2
