@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="r-pan-mybatis-plus" />
         <module name="r-pan-core" />
         <module name="r-pan-swagger2" />
         <module name="r-pan-web" />
@@ -40,6 +41,8 @@
       <module name="r-pan-core1" options="-parameters" />
       <module name="r-pan-distribution" options="-parameters" />
       <module name="r-pan-framework" options="-parameters" />
+      <module name="r-pan-mybatis-plus" options="-parameters" />
+      <module name="r-pan-orm" options="-parameters" />
       <module name="r-pan-parent" options="-parameters" />
       <module name="r-pan-server" options="-parameters" />
       <module name="r-pan-server1" options="-parameters" />
