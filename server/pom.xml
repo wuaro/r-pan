@@ -28,6 +28,16 @@
             <artifactId>r-pan-swagger2</artifactId>
             <version>1.0</version>
         </dependency>
+        <!--在server的pom文件中引入devtools依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wuaro.pan</groupId>
+            <artifactId>r-pan-mybatis-plus</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -63,6 +73,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
