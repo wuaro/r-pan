@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "com.wuaro.pan.cache.caffeine.init-cache-capacity",
+      "type": "java.lang.Integer",
+      "description": "Caffeine缓存的初始容量",
+      "defaultValue": 256
+    },
+    {
+      "name": "com.wuaro.pan.cache.caffeine.max-cache-capacity",
+      "type": "java.lang.Long",
+      "description": "Caffeine缓存的最大容量",
+      "defaultValue": "10000L"
+    },
+    {
+      "name": "com.wuaro.pan.cache.caffeine.allow-null-value",
+      "type": "java.lang.Boolean",
+      "description": "缓存是否允许null作为value",
+      "defaultValue": "true"
+    }
+  ]
+}
