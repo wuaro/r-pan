@@ -6,10 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Caffeine Cache自定义配置属性类
- */
-
-/**
+ * Caffeine Cache自定义配置属性类：
+ * 这个类的成员变量是一些关于cache的属性，方便CaffeineCacheConfig类使用get方法去调用（类上写了@Data注解，会自动生成getset方法）
+ *
  * 注解：
  *      注解@Data：自动提供getset方法（在CaffeineCacheConfig类中会使用get方法获取值）
  *      注解@Component：注入Spring容器
