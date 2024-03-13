@@ -34,6 +34,7 @@
       <module name="core" target="1.5" />
       <module name="framework" target="1.8" />
       <module name="r-pan-core1" target="1.8" />
+      <module name="r-pan-framework" target="1.8" />
       <module name="r-pan-server1" target="1.8" />
       <module name="server" target="1.8" />
       <module name="untitled" target="1.8" />
