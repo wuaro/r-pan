@@ -10,4 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootConfiguration
 @ComponentScan(RPanConstants.BASE_COMPONENT_SCAN_PATH + ".schedule")
 public class ScheduleTestConfig {
+
+
 }
