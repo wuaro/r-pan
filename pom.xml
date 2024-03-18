@@ -161,11 +161,11 @@
             </dependency>
 
             <!--作为数据存储的一部分-->
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-spring-boot-starter</artifactId>
-                <version>${rocketmq.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.rocketmq</groupId>-->
+<!--                <artifactId>rocketmq-spring-boot-starter</artifactId>-->
+<!--                <version>${rocketmq.version}</version>-->
+<!--            </dependency>-->
 
             <!--caffeine：做本地缓存，是当前业界对于本地缓存的最好解决方案-->
             <dependency>

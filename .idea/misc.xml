@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/framework/pom.xml" />
         <option value="$PROJECT_DIR$/framework/cache/core/pom.xml" />
         <option value="$PROJECT_DIR$/framework/cache/pom.xml" />
+        <option value="$PROJECT_DIR$/framework/storage-engine/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

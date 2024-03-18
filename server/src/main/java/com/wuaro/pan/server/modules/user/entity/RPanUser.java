@@ -1,12 +1,12 @@
 package com.wuaro.pan.server.modules.user.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 用户信息表
@@ -19,7 +19,7 @@ public class RPanUser implements Serializable {
      * 用户id
      */
     @TableId(value = "user_id")
-    private Long user_id;
+    private Long userId;
 
     /**
      * 用户名
@@ -55,13 +55,13 @@ public class RPanUser implements Serializable {
      * 创建时间
      */
     @TableField(value = "create_time")
-    private Date create_time;
+    private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField(value = "update_time")
-    private Date update_time;
+    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
