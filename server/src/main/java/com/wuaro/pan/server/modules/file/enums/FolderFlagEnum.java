@@ -5,6 +5,7 @@ import lombok.Getter;
 
 /**
  * 文件夹标识枚举类
+ * code=1表示是文件夹，code=0表示非文件夹
  */
 @AllArgsConstructor
 @Getter

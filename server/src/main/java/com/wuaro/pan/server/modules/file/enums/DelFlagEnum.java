@@ -5,6 +5,7 @@ import lombok.Getter;
 
 /**
  * 文件删除标识枚举类
+ * code=1表示已删除，code=0表示未删除
  */
 @AllArgsConstructor
 @Getter

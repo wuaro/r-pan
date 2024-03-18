@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wuaro.pan.server.modules.log.entity.RPanErrorLog;
 
 /**
- * @author imooc
+ * @author wuaro
  * @description 针对表【r_pan_error_log(错误日志表)】的数据库操作Service
  * @createDate 2022-11-09 18:37:48
  */

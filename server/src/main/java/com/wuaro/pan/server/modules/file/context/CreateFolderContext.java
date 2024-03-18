@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 创建文件夹上下文实体
+ * 创建文件夹的上下文实体
  */
 @Data
 public class CreateFolderContext implements Serializable {
