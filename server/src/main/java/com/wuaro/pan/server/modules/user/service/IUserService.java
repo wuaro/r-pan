@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.user.service;
 
+import com.wuaro.pan.server.modules.user.context.UserLoginContext;
 import com.wuaro.pan.server.modules.user.context.UserRegisterContext;
 import com.wuaro.pan.server.modules.user.entity.RPanUser;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,4 +19,19 @@ public interface IUserService extends IService<RPanUser> {
      * @return
      */
     Long register(UserRegisterContext userRegisterContext);
+
+    /**
+     * 用户登录业务
+     *
+     * @param userLoginContext
+     * @return
+     */
+    String login(UserLoginContext userLoginContext);
+
+    /**
+     * 用户退出登录
+     *
+     * @param userId
+     */
+    void exit(Long userId);
 }

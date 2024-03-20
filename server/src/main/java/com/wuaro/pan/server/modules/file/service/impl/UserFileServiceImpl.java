@@ -51,6 +51,7 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     /**
      * 创建文件夹信息
+     * 创建一个文件夹实体，并存进数据库表中
      *
      * @param createFolderContext
      * @return
@@ -103,6 +104,8 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
      * 用户文件映射关系实体转化
      * 1、构建并填充实体信息
      * 2、处理文件命名一致的问题
+     *
+     * 返回 RPanUserFile对象
      *
      * @param parentId
      * @param userId

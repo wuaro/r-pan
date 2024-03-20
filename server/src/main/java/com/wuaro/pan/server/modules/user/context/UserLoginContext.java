@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Data
 public class UserLoginContext implements Serializable {
 
+
     /**
      *  serialVersionUID 是 Java 中用于序列化和反序列化的一个字段，它是一个长整型数字，用于确保序列化和反序列化过程中类的版本一致性。
      *  在 Java 序列化机制中，当一个对象需要被序列化时，会将对象转换为字节流并保存到文件或网络传输中；
@@ -24,7 +25,7 @@ public class UserLoginContext implements Serializable {
      *
      *  通常情况下，可以通过工具自动生成 serialVersionUID，也可以手动指定一个固定的值。
      */
-    private static final long serialVersionUID = -3754570303177237029L;
+    private static final long serialVersionUID = -592314899501993841L;
 
     /**
      * 用户名

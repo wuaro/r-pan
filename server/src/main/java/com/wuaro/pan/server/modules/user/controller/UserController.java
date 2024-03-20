@@ -2,6 +2,7 @@ package com.wuaro.pan.server.modules.user.controller;
 
 import com.wuaro.pan.core.response.R;
 import com.wuaro.pan.core.utils.IdUtil;
+import com.wuaro.pan.server.common.utils.UserIdUtil;
 import com.wuaro.pan.server.modules.user.context.*;
 import com.wuaro.pan.server.modules.user.converter.UserConverter;
 import com.wuaro.pan.server.modules.user.po.*;
@@ -57,33 +58,33 @@ public class UserController {
 
 
 
-//
-//    @ApiOperation(
-//            value = "用户登录接口",
-//            notes = "该接口提供了用户登录的功能，成功登陆之后，会返回有时效性的accessToken供后续服务使用",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @LoginIgnore
-//    @PostMapping("login")
-//    public R login(@Validated @RequestBody UserLoginPO userLoginPO) {
-//        UserLoginContext userLoginContext = userConverter.userLoginPO2UserLoginContext(userLoginPO);
-//        String accessToken = iUserService.login(userLoginContext);
-//        return R.data(accessToken);
-//    }
-//
-//    @ApiOperation(
-//            value = "用户登出接口",
-//            notes = "该接口提供了用户登出的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("exit")
-//    public R exit() {
-//        iUserService.exit(UserIdUtil.get());
-//        return R.success();
-//    }
-//
+
+    @ApiOperation(
+            value = "用户登录接口",
+            notes = "该接口提供了用户登录的功能，成功登陆之后，会返回有时效性的accessToken供后续服务使用",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+
+    @PostMapping("login")
+    public R login(@Validated @RequestBody UserLoginPO userLoginPO) {
+        UserLoginContext userLoginContext = userConverter.userLoginPO2UserLoginContext(userLoginPO);
+        String accessToken = iUserService.login(userLoginContext);
+        return R.data(accessToken);
+    }
+
+    @ApiOperation(
+            value = "用户登出接口",
+            notes = "该接口提供了用户登出的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("exit")
+    public R exit() {
+        iUserService.exit(UserIdUtil.get());
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "用户忘记密码-校验用户名",
 //            notes = "该接口提供了用户忘记密码-校验用户名的功能",

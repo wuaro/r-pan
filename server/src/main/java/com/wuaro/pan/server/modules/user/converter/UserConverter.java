@@ -29,32 +29,26 @@ public interface UserConverter {
     UserRegisterContext userRegisterPO2UserRegisterContext(UserRegisterPO userRegisterPO);
 
     /**
-     * 注解：
-     *  1. @Mapping(target = "password" , ignore = true)
-     *      需要把上下文里面用户传过来的password忽略掉，以为我们需要对明文的password进行加密处理
+     * UserRegisterContext转RPanUser
      *
      * @param userRegisterContext
      * @return
      */
+    /*
+        注解：
+            1. @Mapping(target = "password" , ignore = true)
+                需要把上下文里面用户传过来的password忽略掉，以为我们需要对明文的password进行加密处理
+     */
     @Mapping(target = "password" , ignore = true)
     RPanUser userRegisterContext2RPanUser(UserRegisterContext userRegisterContext);
 
-//    /**
-//     * UserRegisterContext转RPanUser
-//     *
-//     * @param userRegisterContext
-//     * @return
-//     */
-//    @Mapping(target = "password", ignore = true)
-//    RPanUser userRegisterContext2RPanUser(UserRegisterContext userRegisterContext);
-//
-//    /**
-//     * UserLoginPO转UserLoginContext
-//     *
-//     * @param userLoginPO
-//     * @return
-//     */
-//    UserLoginContext userLoginPO2UserLoginContext(UserLoginPO userLoginPO);
+    /**
+     * UserLoginPO转UserLoginContext
+     *
+     * @param userLoginPO
+     * @return
+     */
+    UserLoginContext userLoginPO2UserLoginContext(UserLoginPO userLoginPO);
 //
 //    /**
 //     * CheckUsernamePO转CheckUsernameContext
