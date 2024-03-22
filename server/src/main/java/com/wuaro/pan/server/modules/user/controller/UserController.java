@@ -2,6 +2,7 @@ package com.wuaro.pan.server.modules.user.controller;
 
 import com.wuaro.pan.core.response.R;
 import com.wuaro.pan.core.utils.IdUtil;
+import com.wuaro.pan.server.common.annotation.LoginIgnore;
 import com.wuaro.pan.server.common.utils.UserIdUtil;
 import com.wuaro.pan.server.modules.user.context.*;
 import com.wuaro.pan.server.modules.user.converter.UserConverter;
@@ -49,6 +50,7 @@ public class UserController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
+    @LoginIgnore
     @PostMapping("register")
     public R register(@Validated @RequestBody UserRegisterPO userRegisterPO) {
         UserRegisterContext userRegisterContext = userConverter.userRegisterPO2UserRegisterContext(userRegisterPO);
@@ -66,6 +68,7 @@ public class UserController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
 
+    @LoginIgnore
     @PostMapping("login")
     public R login(@Validated @RequestBody UserLoginPO userLoginPO) {
         UserLoginContext userLoginContext = userConverter.userLoginPO2UserLoginContext(userLoginPO);

@@ -85,6 +85,7 @@ public class CommonLoginAspect {
                 log.warn("成功拦截到请求，URI为：{}. 检测到用户未登录，将跳转至登录页面", requestURI);
                 return R.fail(ResponseCode.NEED_LOGIN);
             }
+
             log.info("成功拦截到请求，URI为：{}，请求通过", requestURI);
         }
         return proceedingJoinPoint.proceed();
