@@ -4,6 +4,7 @@ import com.wuaro.pan.core.exception.RPanBusinessException;
 import com.wuaro.pan.core.utils.JwtUtil;
 import com.wuaro.pan.server.RPanServerLauncher;
 import com.wuaro.pan.server.modules.user.constants.UserConstants;
+import com.wuaro.pan.server.modules.user.context.CheckUsernameContext;
 import com.wuaro.pan.server.modules.user.context.UserLoginContext;
 import com.wuaro.pan.server.modules.user.context.UserRegisterContext;
 import com.wuaro.pan.server.modules.user.service.IUserService;
@@ -111,6 +112,36 @@ public class UserTest {
         iUserService.exit(userId);
     }
 
+    /**
+     * 校验用户名称通过
+     */
+    @Test
+    public void checkUsernameSuccess() {
+        UserRegisterContext context = createUserRegisterContext();
+        Long register = iUserService.register(context);
+        Assert.isTrue(register.longValue() > 0L);
+
+        CheckUsernameContext checkUsernameContext = new CheckUsernameContext();
+        checkUsernameContext.setUsername(USERNAME);
+        String question = iUserService.checkUsername(checkUsernameContext);
+        Assert.isTrue(StringUtils.isNotBlank(question));
+    }
+
+    /**
+     * 校验用户名称失败-没有查询到该用户
+     */
+    @Test(expected = RPanBusinessException.class)
+    public void checkUsernameNotExist() {
+        UserRegisterContext context = createUserRegisterContext();
+        Long register = iUserService.register(context);
+        Assert.isTrue(register.longValue() > 0L);
+
+        CheckUsernameContext checkUsernameContext = new CheckUsernameContext();
+        checkUsernameContext.setUsername(USERNAME + "_change");
+        iUserService.checkUsername(checkUsernameContext);
+    }
+
+
 
 
     /************************************************private************************************************/
@@ -146,5 +177,7 @@ public class UserTest {
         userLoginContext.setPassword(PASSWORD);
         return userLoginContext;
     }
+
+
 
 }

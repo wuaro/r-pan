@@ -15,7 +15,8 @@ import java.io.Serializable;
 @Data
 public class CheckUsernamePO implements Serializable {
 
-    private static final long serialVersionUID = 1795641889740242870L;
+
+    private static final long serialVersionUID = 6289468671973779450L;
 
     @ApiModelProperty(value = "用户名", required = true)
     @NotBlank(message = "用户名称不能为空")

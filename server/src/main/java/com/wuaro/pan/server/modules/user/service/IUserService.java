@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.user.service;
 
+import com.wuaro.pan.server.modules.user.context.CheckUsernameContext;
 import com.wuaro.pan.server.modules.user.context.UserLoginContext;
 import com.wuaro.pan.server.modules.user.context.UserRegisterContext;
 import com.wuaro.pan.server.modules.user.entity.RPanUser;
@@ -34,4 +35,11 @@ public interface IUserService extends IService<RPanUser> {
      * @param userId
      */
     void exit(Long userId);
+
+    /**
+     * 校验用户名
+     * @param checkUsernameContext
+     * @return
+     */
+    String checkUsername(CheckUsernameContext checkUsernameContext);
 }

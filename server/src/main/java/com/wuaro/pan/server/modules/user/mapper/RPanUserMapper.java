@@ -18,7 +18,7 @@ public interface RPanUserMapper extends BaseMapper<RPanUser> {
      * @param username
      * @return
      */
-    //String selectQuestionByUsername(@Param("username") String username);
+    String selectQuestionByUsername(@Param("username") String username);
 
 }
 
