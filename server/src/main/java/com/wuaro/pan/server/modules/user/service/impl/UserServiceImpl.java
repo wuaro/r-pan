@@ -12,6 +12,7 @@ import com.wuaro.pan.server.modules.file.constants.FileConstants;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.user.constants.UserConstants;
+import com.wuaro.pan.server.modules.user.context.CheckUsernameContext;
 import com.wuaro.pan.server.modules.user.context.UserLoginContext;
 import com.wuaro.pan.server.modules.user.context.UserRegisterContext;
 import com.wuaro.pan.server.modules.user.converter.UserConverter;
@@ -124,6 +125,21 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
             e.printStackTrace();
             throw new RPanBusinessException("用户退出登录失败");
         }
+    }
+
+    /**
+     * 用户忘记密码-校验用户名称
+     *
+     * @param checkUsernameContext
+     * @return
+     */
+    @Override
+    public String checkUsername(CheckUsernameContext checkUsernameContext) {
+        String question = baseMapper.selectQuestionByUsername(checkUsernameContext.getUsername());
+        if (StringUtils.isBlank(question)) {
+            throw new RPanBusinessException("没有此用户");
+        }
+        return question;
     }
 
 

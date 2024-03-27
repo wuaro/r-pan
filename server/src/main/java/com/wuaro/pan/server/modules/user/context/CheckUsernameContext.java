@@ -10,8 +10,8 @@ import java.io.Serializable;
 @Data
 public class CheckUsernameContext implements Serializable {
 
-    private static final long serialVersionUID = -7117844539768126736L;
 
+    private static final long serialVersionUID = 5802466361286085502L;
     /**
      * 用户名称
      */

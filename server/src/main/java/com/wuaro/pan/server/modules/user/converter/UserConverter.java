@@ -49,14 +49,14 @@ public interface UserConverter {
      * @return
      */
     UserLoginContext userLoginPO2UserLoginContext(UserLoginPO userLoginPO);
-//
-//    /**
-//     * CheckUsernamePO转CheckUsernameContext
-//     *
-//     * @param checkUsernamePO
-//     * @return
-//     */
-//    CheckUsernameContext checkUsernamePO2CheckUsernameContext(CheckUsernamePO checkUsernamePO);
+
+    /**
+     * CheckUsernamePO转CheckUsernameContext
+     *
+     * @param checkUsernamePO
+     * @return
+     */
+    CheckUsernameContext checkUsernamePO2CheckUsernameContext(CheckUsernamePO checkUsernamePO);
 //
 //    /**
 //     * CheckAnswerPO转CheckAnswerContext
