@@ -133,6 +133,21 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      * @param checkUsernameContext
      * @return
      */
+    /*
+    参数：
+        1. CheckUsernameContext checkUsernameContext
+    返回值：
+        1. String question：密保问题
+    执行逻辑：
+        1. String question = baseMapper.selectQuestionByUsername(checkUsernameContext.getUsername());
+            从checkUsernameContext中获取用户名，通过baseMapper.selectQuestionByUsername查询数据库表，返回密保问题
+        2. if (StringUtils.isBlank(question)) {
+                throw new RPanBusinessException("没有此用户");
+            }
+            return question;
+            如果查出的值为null，说明根本没有该用户的记录，报错
+            如果查出的值不为null，则返回查出的密保问题
+     */
     @Override
     public String checkUsername(CheckUsernameContext checkUsernameContext) {
         String question = baseMapper.selectQuestionByUsername(checkUsernameContext.getUsername());

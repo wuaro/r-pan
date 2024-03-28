@@ -185,9 +185,32 @@ public class IdUtil {
     }
 
     /**
-     * 加密ID
+     * 加密ID（AES-128加密）
+     * 返回：加密后的字符串
      *
      * @return
+     */
+    /*
+    参数：
+        1. Long id
+            注册生成的用户id
+    执行逻辑：
+        1. 检查输入的 id 是否不为空。
+        2. ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+            分配一个大小为8字节的 ByteBuffer。
+            关于ByteBuffer.allocate(8)：
+                是一个Java NIO中的方法，用于分配一个指定大小的字节缓冲区。
+                在这里，allocate(8) 分配了一个容量为8字节的字节缓冲区，用于存储数据。
+        3. byteBuffer.putLong(0, id);
+            将 id 作为Long值放入 ByteBuffer字节缓冲区 中的位置0（从0开始依次存放）。
+        4. byte[] content = byteBuffer.array();
+            将 ByteBuffer 转换为字节数组（content）。
+        5. byte[] encrypt = AES128Util.aesEncrypt(content);
+            使用AES-128加密对字节数组进行加密（一个进行AES-128加密的方法）。
+        6. return Base64.encode(encrypt);
+            使用Base64编码对加密后的字节数组进行编码（Base64.encode）。
+            Base64.encode(encrypt) 是将给定的字节数组使用 Base64 编码转换为字符串。
+            返回编码后的字符串。
      */
     public static String encrypt(Long id) {
         if (Objects.nonNull(id)) {
