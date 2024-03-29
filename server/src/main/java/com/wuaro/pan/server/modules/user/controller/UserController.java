@@ -236,6 +236,49 @@ public class UserController {
         return R.data(question);
     }
 
+    /**
+     * 用户忘记密码-校验密保答案
+     *
+     * @param checkAnswerPO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            swagger2的接口文档注解，其中如下两行的意思是 接参和返回值 格式都是JSON字符串：
+              consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+              produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        2. @PostMapping("answer/check")
+            是一个用于处理 HTTP POST 请求的 Spring Boot 注解。在这个注解中，"answer/check" 是指定的请求路径。
+            当客户端发送一个 POST 请求到 /answer/check 路径时，
+            Spring Boot 应用程序将调用被 @PostMapping("answer/check") 注解标记的方法来处理该请求。
+        3. @LoginIgnore
+            自定义注解
+            在CommonLoginAspect类中的checkNeedCheckLoginInfo()方法会检测被@LoginIgnore注解标注的方法
+            这些方法全部忽略校验，即无需进行登录校验
+        4. @Validated
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+        5. @RequestBody
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+    参数：
+        1. CheckAnswerPO checkAnswerPO
+            检查密保问题答案的参数实体（将JSON格式的数据映射到该实体类中）
+    执行逻辑：
+        1. CheckAnswerContext checkAnswerContext = userConverter.checkAnswerPO2CheckAnswerContext(checkAnswerPO);
+            将CheckAnswerPO转化为CheckAnswerContext
+            将实体 转化为 上下文对象
+        2. String token = iUserService.checkAnswer(checkAnswerContext);
+            根据密保问题答案上下文对象，去数据库表中查询密保问题答案，如果查到，则返回一个临时token（寿命5分钟）
+        3. return R.data(token);
+            返回临时token
+    */
     @ApiOperation(
             value = "用户忘记密码-校验密保答案",
             notes = "该接口提供了用户忘记密码-校验密保答案的功能",
@@ -250,6 +293,49 @@ public class UserController {
         return R.data(token);
     }
 
+    /**
+     * 用户忘记密码-重置新密码
+     *
+     * @param resetPasswordPO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            swagger2的接口文档注解，其中如下两行的意思是 接参和返回值 格式都是JSON字符串：
+              consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+              produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        2. @PostMapping("password/reset")
+            是一个用于处理 HTTP POST 请求的 Spring Boot 注解。在这个注解中，"password/reset" 是指定的请求路径。
+            当客户端发送一个 POST 请求到 /password/reset 路径时，
+            Spring Boot 应用程序将调用被 @PostMapping("password/reset") 注解标记的方法来处理该请求。
+        3. @LoginIgnore
+            自定义注解
+            在CommonLoginAspect类中的checkNeedCheckLoginInfo()方法会检测被@LoginIgnore注解标注的方法
+            这些方法全部忽略校验，即无需进行登录校验
+        4. @Validated
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+        5. @RequestBody
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+    参数：
+        1. ResetPasswordPO resetPasswordPO
+            重置密码的参数实体（将JSON格式的数据映射到该实体类中）
+    执行逻辑：
+        1. ResetPasswordContext resetPasswordContext = userConverter.resetPasswordPO2ResetPasswordContext(resetPasswordPO);
+            将resetPasswordPO转化为ResetPasswordContext
+            将实体 转化为 上下文对象
+        2. iUserService.resetPassword(resetPasswordContext);
+            重置密码
+        3. return R.success();
+            返回R.success()
+    */
     @ApiOperation(
             value = "用户忘记密码-重置新密码",
             notes = "该接口提供了用户忘记密码-重置新密码的功能",
@@ -264,6 +350,47 @@ public class UserController {
         return R.success();
     }
 
+    /**]
+     * 用户在线修改密码
+     *
+     * @param changePasswordPO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            swagger2的接口文档注解，其中如下两行的意思是 接参和返回值 格式都是JSON字符串：
+              consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+              produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        2. @PostMapping("password/change")
+            是一个用于处理 HTTP POST 请求的 Spring Boot 注解。在这个注解中，"password/change" 是指定的请求路径。
+            当客户端发送一个 POST 请求到 /password/change 路径时，
+            Spring Boot 应用程序将调用被 @PostMapping("password/change") 注解标记的方法来处理该请求。
+        3. @Validated
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+        4. @RequestBody
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+    参数：
+        1. ChangePasswordPO changePasswordPO
+            用户在线修改密码的参数实体（将JSON格式的数据映射到该实体类中）
+    执行逻辑：
+        1. ChangePasswordContext changePasswordContext = userConverter.changePasswordPO2ChangePasswordContext(changePasswordPO);
+            将changePasswordPO转化为ChangePasswordContext
+            将实体 转化为 上下文对象
+        2. changePasswordContext.setUserId(UserIdUtil.get());
+            获取当前线程的用户ID，设置到changePasswordContext
+        3. iUserService.changePassword(changePasswordContext);
+            修改密码
+        4. return R.success();
+            返回R.success()
+    */
     @ApiOperation(
             value = "用户在线修改密码",
             notes = "该接口提供了用户在线修改密码的功能",
@@ -278,6 +405,26 @@ public class UserController {
         return R.success();
     }
 
+    /**
+     * 查询登录用户的基本信息
+     *
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            swagger2的接口文档注解，其中如下两行的意思是 接参和返回值 格式都是JSON字符串：
+              consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+              produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        2. @GetMapping("/")
+            @GetMapping("/") 是一个Spring MVC注解，用于映射HTTP GET请求到指定的处理方法。
+            在这种情况下，@GetMapping("/") 指示处理方法将处理根路径（即网站的首页）的GET请求。
+    执行逻辑：
+        1. UserInfoVO userInfoVO = iUserService.info(UserIdUtil.get());
+            根据当前线程的用户ID 查询用户信息
+        2. return R.data(userInfoVO);
+            返回查询到的用户信息实体VO
+    */
     @ApiOperation(
             value = "查询登录用户的基本信息",
             notes = "该接口提供了查询登录用户的基本信息的功能",

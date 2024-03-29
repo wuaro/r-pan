@@ -221,6 +221,30 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      * @param userId
      * @return
      */
+    /*
+    参数：
+        1. Long userId
+            用户ID
+    返回值：
+        1. UserInfoVO 用户信息实体（后端传到前端的实体命名为xxxxVO）
+    执行逻辑：
+        1. RPanUser entity = getById(userId);
+            调用getById(userId)方法从数据库中获取指定userId的用户信息，并将结果赋值给RPanUser类型的变量entity。
+        2. if (Objects.isNull(entity)) {
+                throw new RPanBusinessException("用户信息查询失败");
+            }
+            如果获取的用户信息为空，则抛出一个自定义的业务异常RPanBusinessException，并传入错误消息"用户信息查询失败"。
+        3. RPanUserFile rPanUserFile = getUserRootFileInfo(userId);
+            调用getUserRootFileInfo(userId)方法从数据库中获取指定userId的用户根文件夹信息，
+            并将结果赋值给RPanUserFile类型的变量rPanUserFile。
+        4. if (Objects.isNull(rPanUserFile)) {
+                throw new RPanBusinessException("查询用户根文件夹信息失败");
+            }
+            如果获取的用户根文件夹信息为空，则抛出一个自定义的业务异常RPanBusinessException，并传入错误消息"查询用户根文件夹信息失败"。
+        5. return userConverter.assembleUserInfoVO(entity, rPanUserFile);
+            调用userConverter对象的assembleUserInfoVO方法，将获取的用户信息、用户根文件夹信息 转换为一个UserInfoVO对象，
+            并将该对象作为方法的返回值。
+     */
     @Override
     public UserInfoVO info(Long userId) {
         RPanUser entity = getById(userId);
@@ -232,7 +256,6 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
         if (Objects.isNull(rPanUserFile)) {
             throw new RPanBusinessException("查询用户根文件夹信息失败");
         }
-
         return userConverter.assembleUserInfoVO(entity, rPanUserFile);
     }
 
@@ -471,6 +494,31 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      *
      * @param resetPasswordContext
      */
+    /*
+    参数：
+        1. ResetPasswordContext resetPasswordContext
+            重置密码上下文对象
+    执行逻辑：
+        1. String username = resetPasswordContext.getUsername();
+           String password = resetPasswordContext.getPassword();
+            从ResetPasswordContext对象中获取用户名、新密码。
+        2. RPanUser entity = getRPanUserByUsername(username);
+            根据用户名从数据库中获取用户信息。
+        3. if (Objects.isNull(entity)) {
+                throw new RPanBusinessException("用户信息不存在");
+            }
+            检查获取的用户信息是否为空，如果为空说明用户信息不存在，抛出相应的业务异常。
+        4. String newDbPassword = PasswordUtil.encryptPassword(entity.getSalt(), password);
+            使用PasswordUtil工具类对新密码进行加密，加密时需要使用用户的盐值。
+        5. entity.setPassword(newDbPassword);
+            将加密后的新密码设置到用户实体对象中。
+        6. entity.setUpdateTime(new Date());
+            设置用户信息更新时间为当前时间。
+        7. if (!updateById(entity)) {
+                throw new RPanBusinessException("重置用户密码失败");
+            }
+            调用数据库更新操作将修改后的用户信息保存到数据库中，如果更新操作失败则抛出相应的业务异常。
+     */
     private void checkAndResetUserPassword(ResetPasswordContext resetPasswordContext) {
         String username = resetPasswordContext.getUsername();
         String password = resetPasswordContext.getPassword();
@@ -492,6 +540,27 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      * 验证忘记密码的token是否有效
      *
      * @param resetPasswordContext
+     */
+    /*
+    参数：
+        1. ResetPasswordContext resetPasswordContext
+            重置密码上下文对象
+    运行逻辑：
+        1. String token = resetPasswordContext.getToken();
+            从ResetPasswordContext对象中获取重置密码的令牌。
+        2. Object value = JwtUtil.analyzeToken(token, UserConstants.FORGET_USERNAME);
+            使用JwtUtil工具类解析令牌，其中UserConstants.FORGET_USERNAME是用于解析用户名的键。
+            这个方法返回的是解析出来的令牌中的用户名（重点！！！）。
+        3. if (Objects.isNull(value)) {
+                throw new RPanBusinessException(ResponseCode.TOKEN_EXPIRE);
+            }
+            检查解析出来的值是否为空，如果为空说明令牌已过期，抛出相应的业务异常。
+        4. String tokenUsername = String.valueOf(value);
+            将解析出来的值转换为字符串，即令牌中的用户名。
+        5. if (!Objects.equals(tokenUsername, resetPasswordContext.getUsername())) {
+                throw new RPanBusinessException("token错误");
+            }
+            检查解析出来的用户名是否与ResetPasswordContext对象中的用户名匹配，如果不匹配说明令牌错误，抛出相应的业务异常。
      */
     private void checkForgetPasswordToken(ResetPasswordContext resetPasswordContext) {
         String token = resetPasswordContext.getToken();
@@ -518,6 +587,25 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      *
      * @param changePasswordContext
      */
+    /*
+    参数：
+        1.
+    执行逻辑：
+        1. String newPassword = changePasswordContext.getNewPassword();
+            RPanUser entity = changePasswordContext.getEntity();
+            String salt = entity.getSalt();
+            获取用户输入的新密码
+            获取当前用户的实体
+            从用户实体中获取用户的salt盐值
+        2.String encNewPassword = PasswordUtil.encryptPassword(salt, newPassword);
+            entity.setPassword(encNewPassword);
+            将新密码结合salt盐值进行加密
+            将加密后的密码存入用户实体中
+        3. if (!updateById(entity)) {
+                throw new RPanBusinessException("修改用户密码失败");
+            }
+            如果数据库更新失败则报错
+     */
     private void doChangePassword(ChangePasswordContext changePasswordContext) {
         String newPassword = changePasswordContext.getNewPassword();
         RPanUser entity = changePasswordContext.getEntity();
@@ -537,6 +625,29 @@ public class UserServiceImpl extends ServiceImpl<RPanUserMapper, RPanUser>
      * 改不周会查询并封装用户的实体信息到上下文对象中
      *
      * @param changePasswordContext
+     */
+    /*
+    参数：
+        1.
+    执行逻辑：
+        1. Long userId = changePasswordContext.getUserId();
+            String oldPassword = changePasswordContext.getOldPassword();
+            从changePasswordContext中获取用户ID和旧密码。
+        2. RPanUser entity = getById(userId);
+            if (Objects.isNull(entity)) {
+                throw new RPanBusinessException("用户信息不存在");
+            }
+            使用用户ID查询数据库中对应的用户信息。
+            如果查询到的用户信息为null，表示用户信息不存在，抛出业务异常。
+        3. changePasswordContext.setEntity(entity);
+            将查询到的用户信息设置到changePasswordContext中，方便后续方法使用。
+        4. String encOldPassword = PasswordUtil.encryptPassword(entity.getSalt(), oldPassword);
+            String dbOldPassword = entity.getPassword();
+            if (!Objects.equals(encOldPassword, dbOldPassword)) {
+                throw new RPanBusinessException("旧密码不正确");
+            }
+            使用密码工具类PasswordUtil对输入的旧密码进行加密，然后与数据库中存储的旧密码进行比较。
+            如果加密后的旧密码与数据库中的旧密码不相等，表示旧密码不正确，抛出业务异常。
      */
     private void checkOldPassword(ChangePasswordContext changePasswordContext) {
         Long userId = changePasswordContext.getUserId();
