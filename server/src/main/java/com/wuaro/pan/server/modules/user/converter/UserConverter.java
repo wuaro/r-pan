@@ -90,6 +90,15 @@ public interface UserConverter {
      * @param rPanUserFile
      * @return
      */
+    /*
+    注解：
+        1. @Mapping(source = "rPanUser.username", target = "username"):
+            表示将rPanUser对象中的username属性映射到UserInfoVO对象的username属性上。
+        2. @Mapping(source = "rPanUserFile.fileId", target = "rootFileId"):
+            表示将rPanUserFile对象中的fileId属性映射到UserInfoVO对象的rootFileId属性上。
+        3. @Mapping(source = "rPanUserFile.filename", target = "rootFilename"):
+            表示将rPanUserFile对象中的filename属性映射到UserInfoVO对象的rootFilename属性上。
+     */
     @Mapping(source = "rPanUser.username", target = "username")
     @Mapping(source = "rPanUserFile.fileId", target = "rootFileId")
     @Mapping(source = "rPanUserFile.filename", target = "rootFilename")
