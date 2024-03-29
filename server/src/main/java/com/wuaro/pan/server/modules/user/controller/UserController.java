@@ -8,6 +8,7 @@ import com.wuaro.pan.server.modules.user.context.*;
 import com.wuaro.pan.server.modules.user.converter.UserConverter;
 import com.wuaro.pan.server.modules.user.po.*;
 import com.wuaro.pan.server.modules.user.service.IUserService;
+import com.wuaro.pan.server.modules.user.vo.UserInfoVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,59 +235,59 @@ public class UserController {
         String question = iUserService.checkUsername(checkUsernameContext);
         return R.data(question);
     }
-//
-//    @ApiOperation(
-//            value = "用户忘记密码-校验密保答案",
-//            notes = "该接口提供了用户忘记密码-校验密保答案的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @LoginIgnore
-//    @PostMapping("answer/check")
-//    public R checkAnswer(@Validated @RequestBody CheckAnswerPO checkAnswerPO) {
-//        CheckAnswerContext checkAnswerContext = userConverter.checkAnswerPO2CheckAnswerContext(checkAnswerPO);
-//        String token = iUserService.checkAnswer(checkAnswerContext);
-//        return R.data(token);
-//    }
-//
-//    @ApiOperation(
-//            value = "用户忘记密码-重置新密码",
-//            notes = "该接口提供了用户忘记密码-重置新密码的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("password/reset")
-//    @LoginIgnore
-//    public R resetPassword(@Validated @RequestBody ResetPasswordPO resetPasswordPO) {
-//        ResetPasswordContext resetPasswordContext = userConverter.resetPasswordPO2ResetPasswordContext(resetPasswordPO);
-//        iUserService.resetPassword(resetPasswordContext);
-//        return R.success();
-//    }
-//
-//    @ApiOperation(
-//            value = "用户在线修改密码",
-//            notes = "该接口提供了用户在线修改密码的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("password/change")
-//    public R changePassword(@Validated @RequestBody ChangePasswordPO changePasswordPO) {
-//        ChangePasswordContext changePasswordContext = userConverter.changePasswordPO2ChangePasswordContext(changePasswordPO);
-//        changePasswordContext.setUserId(UserIdUtil.get());
-//        iUserService.changePassword(changePasswordContext);
-//        return R.success();
-//    }
-//
-//    @ApiOperation(
-//            value = "查询登录用户的基本信息",
-//            notes = "该接口提供了查询登录用户的基本信息的功能",
-//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @GetMapping("/")
-//    public R<UserInfoVO> info() {
-//        UserInfoVO userInfoVO = iUserService.info(UserIdUtil.get());
-//        return R.data(userInfoVO);
-//    }
+
+    @ApiOperation(
+            value = "用户忘记密码-校验密保答案",
+            notes = "该接口提供了用户忘记密码-校验密保答案的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @LoginIgnore
+    @PostMapping("answer/check")
+    public R checkAnswer(@Validated @RequestBody CheckAnswerPO checkAnswerPO) {
+        CheckAnswerContext checkAnswerContext = userConverter.checkAnswerPO2CheckAnswerContext(checkAnswerPO);
+        String token = iUserService.checkAnswer(checkAnswerContext);
+        return R.data(token);
+    }
+
+    @ApiOperation(
+            value = "用户忘记密码-重置新密码",
+            notes = "该接口提供了用户忘记密码-重置新密码的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("password/reset")
+    @LoginIgnore
+    public R resetPassword(@Validated @RequestBody ResetPasswordPO resetPasswordPO) {
+        ResetPasswordContext resetPasswordContext = userConverter.resetPasswordPO2ResetPasswordContext(resetPasswordPO);
+        iUserService.resetPassword(resetPasswordContext);
+        return R.success();
+    }
+
+    @ApiOperation(
+            value = "用户在线修改密码",
+            notes = "该接口提供了用户在线修改密码的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("password/change")
+    public R changePassword(@Validated @RequestBody ChangePasswordPO changePasswordPO) {
+        ChangePasswordContext changePasswordContext = userConverter.changePasswordPO2ChangePasswordContext(changePasswordPO);
+        changePasswordContext.setUserId(UserIdUtil.get());
+        iUserService.changePassword(changePasswordContext);
+        return R.success();
+    }
+
+    @ApiOperation(
+            value = "查询登录用户的基本信息",
+            notes = "该接口提供了查询登录用户的基本信息的功能",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @GetMapping("/")
+    public R<UserInfoVO> info() {
+        UserInfoVO userInfoVO = iUserService.info(UserIdUtil.get());
+        return R.data(userInfoVO);
+    }
 
 }

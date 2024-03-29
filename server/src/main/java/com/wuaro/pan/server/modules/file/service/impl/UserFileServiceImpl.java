@@ -67,6 +67,22 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
                 null);
     }
 
+    /**
+     * 查询用户的根文件夹信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public RPanUserFile getUserRootFile(Long userId) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("parent_id", FileConstants.TOP_PARENT_ID);
+        queryWrapper.eq("del_flag", DelFlagEnum.NO.getCode());
+        queryWrapper.eq("folder_flag", FolderFlagEnum.YES.getCode());
+        return getOne(queryWrapper);
+    }
+
 
     /************************************************private************************************************/
 

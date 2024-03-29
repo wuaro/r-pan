@@ -1,10 +1,9 @@
 package com.wuaro.pan.server.modules.user.service;
 
-import com.wuaro.pan.server.modules.user.context.CheckUsernameContext;
-import com.wuaro.pan.server.modules.user.context.UserLoginContext;
-import com.wuaro.pan.server.modules.user.context.UserRegisterContext;
+import com.wuaro.pan.server.modules.user.context.*;
 import com.wuaro.pan.server.modules.user.entity.RPanUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wuaro.pan.server.modules.user.vo.UserInfoVO;
 
 /**
  * @author 11391
@@ -38,8 +37,40 @@ public interface IUserService extends IService<RPanUser> {
 
     /**
      * 校验用户名
+     *
      * @param checkUsernameContext
      * @return
      */
     String checkUsername(CheckUsernameContext checkUsernameContext);
+
+    /**
+     * 用户忘记密码-校验密保答案
+     *
+     * @param checkAnswerContext
+     * @return
+     */
+    String checkAnswer(CheckAnswerContext checkAnswerContext);
+
+    /**
+     * 重置用户密码
+     *
+     * @param resetPasswordContext
+     */
+    void resetPassword(ResetPasswordContext resetPasswordContext);
+
+
+    /**
+     * 修改用户密码
+     *
+     * @param changePasswordContext
+     */
+    void changePassword(ChangePasswordContext changePasswordContext);
+
+    /**
+     * 查询在线用户的基本信息
+     *
+     * @param userId
+     * @return
+     */
+    UserInfoVO info(Long userId);
 }
