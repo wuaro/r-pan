@@ -8,13 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="r-pan-swagger2" />
+        <module name="r-pan-core" />
         <module name="r-pan-cache-core" />
         <module name="r-pan-cache-redis" />
         <module name="r-pan-cache-caffeine" />
         <module name="r-pan-schedule" />
-        <module name="r-pan-distribution" />
-        <module name="r-pan-core" />
         <module name="r-pan-mybatis-plus" />
+        <module name="r-pan-distribution" />
         <module name="r-pan-web" />
       </profile>
       <profile name="Annotation profile for r-pan-parent" enabled="true">
@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/mapstruct/mapstruct-processor/1.5.2.Final/mapstruct-processor-1.5.2.Final.jar" />
-          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/mapstruct/mapstruct/1.5.2.Final/mapstruct-1.5.2.Final.jar" />
-          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar" />
-          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
-          <entry name="D:/maven/apache-maven-3.6.1/mvn_resp/org/springframework/boot/spring-boot-configuration-processor/2.1.9.RELEASE/spring-boot-configuration-processor-2.1.9.RELEASE.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../software/others/maven/maven_local_repository/org/mapstruct/mapstruct-processor/1.5.2.Final/mapstruct-processor-1.5.2.Final.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../software/others/maven/maven_local_repository/org/mapstruct/mapstruct/1.5.2.Final/mapstruct-1.5.2.Final.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../software/others/maven/maven_local_repository/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../software/others/maven/maven_local_repository/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$PROJECT_DIR$/../../../../../software/others/maven/maven_local_repository/org/springframework/boot/spring-boot-configuration-processor/2.1.9.RELEASE/spring-boot-configuration-processor-2.1.9.RELEASE.jar" />
         </processorPath>
         <module name="r-pan-server" />
       </profile>
