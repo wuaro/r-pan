@@ -1,8 +1,12 @@
 package com.wuaro.pan.server.modules.file.service;
 
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
+
+import java.util.List;
 
 /**
  * @author 11391
@@ -26,4 +30,12 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @return
      */
     RPanUserFile getUserRootFile(Long userId);
+
+    /**
+     * 查询用户的文件列表
+     *
+     * @param context
+     * @return
+     */
+    List<RPanUserFileVO> getFileList(QueryFileListContext context);
 }

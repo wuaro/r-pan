@@ -27,4 +27,60 @@
         create_user,create_time,update_user,
         update_time
     </sql>
+
+
+    <!--
+    这段 XML 代码是一个 MyBatis 的 Mapper 文件中的一个 SQL 查询语句，用于根据给定条件查询文件列表。
+    1. <select id="selectFileList" resultType="com.wuaro.pan.server.modules.file.vo.RPanUserFileVO">：
+        这是一个 SQL 查询语句的定义，id 属性指定了这个查询语句的唯一标识符，resultType 属性指定了查询结果的返回类型。
+    2. SELECT ... FROM r_pan_user_file：
+        从 r_pan_user_file 表中选择指定的列。
+    3. WHERE user_id = #{param.userId}：
+        查询条件，限定了查询结果的 user_id 列必须等于 #{param.userId} 的值。
+        #{param.userId}的植也就是QueryFileListContext.userId，因为RPanUserFileMapper类中的@Param("param")注解
+    4. <if test="param.parentId != null and param.parentId != -1"> ... </if>
+        这是一个条件判断语句，用于根据不同的条件拼接 SQL 查询语句。
+    5. test 属性
+        指定了条件判断的表达式，表示当 param.parentId 不为空且不等于 -1 时，执行条件语句块。
+    6. AND parent_id = #{param.parentId}：
+        条件语句块，表示在查询结果中要求 parent_id 列等于 #{param.parentId} 的值。
+    7. <if test="param.fileTypeArray != null"> ... </if>：
+        同样是一个条件判断语句，用于处理文件类型数组的查询。
+    8. test 属性
+        指定了条件判断的表达式，表示当 param.fileTypeArray 不为空时，执行条件语句块。
+    9. AND file_type IN (...)：条件语句块，
+        表示在查询结果中要求 file_type 列的值在 param.fileTypeArray 数组中。
+    10. 最后的 AND del_flag = #{param.delFlag} 部分
+        表示了另一个条件，要求查询结果中的 del_flag 列等于 #{param.delFlag} 的值。
+    总体来说
+        这个查询语句会根据传入的条件动态构建 SQL 查询语句，从 r_pan_user_file 表中查询符合条件的文件信息。
+        查询条件包括 user_id、parent_id、file_type 数组和 del_flag 等。
+    需要注意的是，${param.xxx} 是 MyBatis 的参数占位符语法，表示从传入的参数对象中获取指定属性的值。例如，#{param.userId} 表示获取传入参数对象的 userId 属性的值。
+    -->
+    <select id="selectFileList" resultType="com.wuaro.pan.server.modules.file.vo.RPanUserFileVO">
+        SELECT
+            file_id AS fileId,
+            parent_id AS parentId,
+            filename AS filename,
+            file_size_desc AS fileSizeDesc,
+            folder_flag AS folderFlag,
+            file_type AS fileType,
+            update_time AS updateTime
+        FROM
+            r_pan_user_file
+        WHERE
+            user_id = #{param.userId}
+        <if test="param.parentId != null and param.parentId != -1">
+            AND parent_id = #{param.parentId}
+        </if>
+        <if test="param.fileTypeArray != null">
+            AND file_type IN
+            <foreach collection="param.fileTypeArray" open="(" close=")" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        AND del_flag = #{param.delFlag}
+    </select>
+
+
 </mapper>

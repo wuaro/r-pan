@@ -6,11 +6,13 @@ import com.wuaro.pan.core.exception.RPanBusinessException;
 import com.wuaro.pan.core.utils.IdUtil;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 import com.wuaro.pan.server.modules.file.enums.FolderFlagEnum;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.mapper.RPanUserFileMapper;
+import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.apache.commons.collections.CollectionUtils;
@@ -81,6 +83,17 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         queryWrapper.eq("del_flag", DelFlagEnum.NO.getCode());
         queryWrapper.eq("folder_flag", FolderFlagEnum.YES.getCode());
         return getOne(queryWrapper);
+    }
+
+    /**
+     * 查询用户的文件列表
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public List<RPanUserFileVO> getFileList(QueryFileListContext context) {
+        return baseMapper.selectFileList(context);
     }
 
 

@@ -42,6 +42,21 @@ public class FileController {
 //    @Autowired
 //    private FileConverter fileConverter;
 
+    /**
+     * 查询文件列表
+     *
+     * @param parentId
+     * @param fileTypes
+     * @return
+     */
+    /*
+    这段代码是一个用于查询文件列表的接口方法。让我解释一下这个方法的主要功能和注解：
+    @ApiOperation：这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+    @GetMapping("files")：这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/files"。
+    public R<List<RPanUserFileVO>> list(@NotBlank(message = "父文件夹ID不能为空") @RequestParam(value = "parentId", required = false) String parentId, @RequestParam(value = "fileTypes", required = false, defaultValue = FileConstants.ALL_FILE_TYPE) String fileTypes)：这是方法的定义，它接受两个参数，分别是父文件夹ID和文件类型。@NotBlank 注解表示 parentId 参数不能为空，@RequestParam 注解表示这两个参数是通过请求参数传递的，其中 parentId 是必需的，而 fileTypes 则是可选的，默认值为 "ALL_FILE_TYPE"。方法返回的结果是一个 R 对象，包含一个文件列表。
+    方法内部的逻辑是先将 parentId 解密为实际的父文件夹ID，然后根据传入的文件类型参数构建查询条件，最后调用 iUserFileService.getFileList(context) 方法查询文件列表，并将结果封装在 R 对象中返回。
+    总体来说，这个接口的作用是根据用户传入的父文件夹ID和文件类型查询文件列表，并将结果以 JSON 格式返回给客户端。
+     */
     @ApiOperation(
             value = "查询文件列表",
             notes = "该接口提供了用户插叙某文件夹下面某些文件类型的文件列表的功能",
