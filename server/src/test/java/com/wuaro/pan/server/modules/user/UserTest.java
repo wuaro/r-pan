@@ -1,8 +1,14 @@
 package com.wuaro.pan.server.modules.user;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.wuaro.pan.core.exception.RPanBusinessException;
 import com.wuaro.pan.core.utils.JwtUtil;
 import com.wuaro.pan.server.RPanServerLauncher;
+import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
+import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
+import com.wuaro.pan.server.modules.file.service.IUserFileService;
+import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import com.wuaro.pan.server.modules.user.constants.UserConstants;
 import com.wuaro.pan.server.modules.user.context.*;
 import com.wuaro.pan.server.modules.user.service.IUserService;
@@ -16,6 +22,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.lang.Assert;
 
+import java.util.List;
+
 /**
  * 用户模块单元测试类
  */
@@ -27,6 +35,11 @@ public class UserTest {
 
     @Autowired
     private IUserService iUserService;
+
+    @Autowired
+    private IUserFileService iUserFileService;
+
+
 
     /**
      * 测试成功注册用户信息
@@ -264,19 +277,70 @@ public class UserTest {
         iUserService.changePassword(changePasswordContext);
     }
 
+    /**
+     * 测试用户查询文件列表成功
+     */
     @Test
-    public void testQueryUserInfo() {
+    public void testQueryUserFileListSuccess() {
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
 
-        UserRegisterContext context = createUserRegisterContext();
-        Long register = iUserService.register(context);
-        Assert.isTrue(register.longValue() > 0L);
+        QueryFileListContext context = new QueryFileListContext();
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+        context.setFileTypeArray(null);
+        context.setDelFlag(DelFlagEnum.NO.getCode());
 
-        UserInfoVO userInfoVO = iUserService.info(register);
-        Assert.notNull(userInfoVO);
+        List<RPanUserFileVO> result = iUserFileService.getFileList(context);
+        Assert.isTrue(CollectionUtils.isEmpty(result));
     }
+
+    /**
+     * 测试创建文件夹成功
+     */
+    @Test
+    public void testCreateFolderSuccess() {
+
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
+
+        CreateFolderContext context = new CreateFolderContext();
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+        context.setFolderName("folder-name");
+
+        Long fileId = iUserFileService.createFolder(context);
+        Assert.notNull(fileId);
+    }
+
+
 
     /************************************************private************************************************/
 
+
+    /**
+     * 用户注册
+     *
+     * @return 新用户的ID
+     */
+    private Long register() {
+        UserRegisterContext context = createUserRegisterContext();
+        Long register = iUserService.register(context);
+        Assert.isTrue(register.longValue() > 0L);
+        return register;
+    }
+
+    /**
+     * 查询登录用户的基本信息
+     *
+     * @param userId
+     * @return
+     */
+    private UserInfoVO info(Long userId) {
+        UserInfoVO userInfoVO = iUserService.info(userId);
+        Assert.notNull(userInfoVO);
+        return userInfoVO;
+    }
 
     private final static String USERNAME = "wuaro";
     private final static String PASSWORD = "123456789";

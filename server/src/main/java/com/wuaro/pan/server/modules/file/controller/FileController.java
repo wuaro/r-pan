@@ -8,9 +8,12 @@ import com.wuaro.pan.server.common.utils.UserIdUtil;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
 //import com.wuaro.pan.server.modules.file.context.*;
 //import com.wuaro.pan.server.modules.file.converter.FileConverter;
+import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
+import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.po.*;
+import com.wuaro.pan.server.modules.file.po.CreateFolderPO;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
@@ -39,8 +42,8 @@ public class FileController {
     @Autowired
     private IUserFileService iUserFileService;
 
-//    @Autowired
-//    private FileConverter fileConverter;
+    @Autowired
+    private FileConverter fileConverter;
 
     /**
      * 查询文件列表
@@ -50,12 +53,71 @@ public class FileController {
      * @return
      */
     /*
-    这段代码是一个用于查询文件列表的接口方法。让我解释一下这个方法的主要功能和注解：
-    @ApiOperation：这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
-    @GetMapping("files")：这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/files"。
-    public R<List<RPanUserFileVO>> list(@NotBlank(message = "父文件夹ID不能为空") @RequestParam(value = "parentId", required = false) String parentId, @RequestParam(value = "fileTypes", required = false, defaultValue = FileConstants.ALL_FILE_TYPE) String fileTypes)：这是方法的定义，它接受两个参数，分别是父文件夹ID和文件类型。@NotBlank 注解表示 parentId 参数不能为空，@RequestParam 注解表示这两个参数是通过请求参数传递的，其中 parentId 是必需的，而 fileTypes 则是可选的，默认值为 "ALL_FILE_TYPE"。方法返回的结果是一个 R 对象，包含一个文件列表。
-    方法内部的逻辑是先将 parentId 解密为实际的父文件夹ID，然后根据传入的文件类型参数构建查询条件，最后调用 iUserFileService.getFileList(context) 方法查询文件列表，并将结果封装在 R 对象中返回。
-    总体来说，这个接口的作用是根据用户传入的父文件夹ID和文件类型查询文件列表，并将结果以 JSON 格式返回给客户端。
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+        2. @GetMapping("files")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/files"。
+        3. @NotBlank(message = "父文件夹ID不能为空")
+            @NotBlank 是一个来自于 Hibernate Validator 的注解，用于校验字符串类型的参数是否为空或者只包含空格。
+            如果传入的父文件夹ID参数为空或者只包含空格，那么会抛出一个带有指定消息的异常，消息内容为 "父文件夹ID不能为空"，这个消息可以用来提示调用方传入的参数有误。
+        4. @RequestParam(value = "parentId", required = false)
+            @RequestParam 注解用于从请求中获取参数值，并将其绑定到方法的参数上。
+            在这个代码中，@RequestParam(value = "parentId", required = false) 表示从请求中获取名为 "parentId" 的参数的值，
+            如果该参数不存在或者为空，则使用默认值为 null。required = false 表示该参数是可选的，可以不传递。
+        5. @RequestParam(value = "fileTypes", required = false, defaultValue = FileConstants.ALL_FILE_TYPE)
+            @RequestParam 注解用于从请求中获取参数值，并将其绑定到方法的参数上。
+            这段代码表示从请求中获取名为 "fileTypes" 的参数的值，如果该参数不存在或者为空，则使用默认值 FileConstants.ALL_FILE_TYPE。
+    参数，
+        两个，分别是父文件夹ID和文件类型。
+        @NotBlank 注解表示 parentId 参数不能为空，@RequestParam 注解表示这两个参数是通过请求参数传递的，
+        其中 parentId 是必需的，而 fileTypes 则是可选的，默认值为 "ALL_FILE_TYPE"。
+    返回值：
+        返回的结果是一个 R 对象，包含一个文件列表。
+    执行逻辑：
+        1. Long realParentId = -1L;
+            if (!FileConstants.ALL_FILE_TYPE.equals(parentId)) {
+                realParentId = IdUtil.decrypt(parentId);
+            }
+            这段代码的作用是将接收到的父文件夹ID进行解密，如果解密成功，则将解密后的值赋给 realParentId 变量，否则使用默认值 -1L。
+            首先将 realParentId 初始化为默认值 -1L。
+            检查接收到的父文件夹ID是否等于 FileConstants.ALL_FILE_TYPE，如果不相等，则执行以下代码块。
+            调用 IdUtil.decrypt(parentId) 方法对接收到的父文件夹ID进行解密，并将解密后的值赋给 realParentId 变量。
+        2. List<Integer> fileTypeArray = null;
+            if (!Objects.equals(FileConstants.ALL_FILE_TYPE, fileTypes)) {
+                fileTypeArray = Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                                        .splitToList(fileTypes)
+                                        .stream()
+                                        .map(Integer::valueOf)
+                                        .collect(Collectors.toList());
+            }
+            首先将 fileTypeArray 初始化为 null。
+            检查接收到的文件类型字符串是否等于 FileConstants.ALL_FILE_TYPE，如果不相等，则执行以下代码块。
+            Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                使用指定的分隔符 RPanConstants.COMMON_SEPARATOR 创建一个Splitter对象，用于将字符串拆分成多个子串。
+            .splitToList(fileTypes)
+                将文件类型字符串 fileTypes 按照指定的分隔符拆分成一个字符串列表。
+            .stream()
+                将列表转换为流，以便后续进行流式操作。
+            .map(Integer::valueOf)
+                对流中的每个字符串元素应用 Integer.valueOf 方法，将其转换为整数。
+            .collect(Collectors.toList())
+                将流中的元素收集到一个新的列表中，最终得到整数类型的文件类型列表 fileTypeArray。
+            这段代码的作用是将接收到的文件类型字符串按照指定的分隔符拆分成多个子串，并将这些子串转换为整数，然后将这些整数放入列表中。
+        3. QueryFileListContext context = new QueryFileListContext();
+            context.setParentId(realParentId);
+            context.setFileTypeArray(fileTypeArray);
+            context.setUserId(UserIdUtil.get());
+            context.setDelFlag(DelFlagEnum.NO.getCode());
+            List<RPanUserFileVO> result = iUserFileService.getFileList(context);
+            return R.data(result);
+            创建 查询文件上下文QueryFileListContext对象context，并设置属性值：
+            设置父文件夹ID，即指定要查询的文件夹ID。
+            设置文件类型数组，即指定要查询的文件类型。
+            设置用户ID，即当前用户的ID。
+            设置删除标志，即指定查询未删除的文件。
+            调用 iUserFileService.getFileList(context) 方法获取文件列表，传入上面设置好的 context 对象，进行文件查询操作。
+            将文件列表结果 result 包装成 R 类型的响应对象，使用 R.data(result) 创建响应对象并返回。
      */
     @ApiOperation(
             value = "查询文件列表",
@@ -72,9 +134,12 @@ public class FileController {
         }
 
         List<Integer> fileTypeArray = null;
-
         if (!Objects.equals(FileConstants.ALL_FILE_TYPE, fileTypes)) {
-            fileTypeArray = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileTypes).stream().map(Integer::valueOf).collect(Collectors.toList());
+            fileTypeArray = Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                                    .splitToList(fileTypes)
+                                    .stream()
+                                    .map(Integer::valueOf)
+                                    .collect(Collectors.toList());
         }
 
         QueryFileListContext context = new QueryFileListContext();
@@ -87,18 +152,18 @@ public class FileController {
         return R.data(result);
     }
 
-//    @ApiOperation(
-//            value = "创建文件夹",
-//            notes = "该接口提供了创建文件夹的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/folder")
-//    public R<String> createFolder(@Validated @RequestBody CreateFolderPO createFolderPO) {
-//        CreateFolderContext context = fileConverter.createFolderPO2CreateFolderContext(createFolderPO);
-//        Long fileId = iUserFileService.createFolder(context);
-//        return R.data(IdUtil.encrypt(fileId));
-//    }
+    @ApiOperation(
+            value = "创建文件夹",
+            notes = "该接口提供了创建文件夹的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/folder")
+    public R<String> createFolder(@Validated @RequestBody CreateFolderPO createFolderPO) {
+        CreateFolderContext context = fileConverter.createFolderPO2CreateFolderContext(createFolderPO);
+        Long fileId = iUserFileService.createFolder(context);
+        return R.data(IdUtil.encrypt(fileId));
+    }
 //
 //    @ApiOperation(
 //            value = "文件重命名",

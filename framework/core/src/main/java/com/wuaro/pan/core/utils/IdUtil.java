@@ -186,7 +186,8 @@ public class IdUtil {
 
     /**
      * 加密ID（AES-128加密）
-     * 返回：加密后的字符串
+     * Long类型的ID经过AES-128加密，返回加密后的字符串
+     * Long -> 字符数组 -> AES-128加密后的字符串
      *
      * @return
      */
@@ -224,10 +225,35 @@ public class IdUtil {
     }
 
     /**
-     * 解密ID
+     * 解密ID（AES-128解密）
+     * 加密后的字符串经过AES-128解密，返回Long类型的ID
+     * AES-128加密后的字符串 -> 字符数组 -> Long
      *
      * @param decryptId
      * @return
+     */
+    /*
+    参数：
+        1. String decryptId
+            加密过的Id字符串
+    执行逻辑：
+        1. if (StringUtils.isNotBlank(decryptId))
+            判断decryptId字符串是否不为空 且 不全是空白字符。如果满足条件则进行下面的解密操作。如果decryptId为空，则抛出异常。
+        2.byte[] encrypt = Base64.decode(decryptId);
+            是一个 Base64 解码的操作，它将 Base64 编码的字符串decryptId解码成字节数组
+            说白了就是从字符串变成字符数组
+        3. AES128Util.aesDecode(encrypt)
+            是一个 AES 解密操作，它将加密的字节数组解密成原始数据。
+        4. if (ArrayUtil.isNotEmpty(content)) {
+                ByteBuffer byteBuffer = ByteBuffer.wrap(content);
+                return byteBuffer.getLong();
+            }
+            ArrayUtil.isNotEmpty(content) 检查 content 不为空，即解密后的字节数组有数据。
+            ByteBuffer.wrap(content) 将 content 包装为 ByteBuffer，ByteBuffer 是 Java NIO 中用于处理字节数据的类。
+            byteBuffer.getLong() 从 ByteBuffer 中获取一个长整型数据。
+            这段代码的作用是将 AES 解密后的字节数组转换为长整型数据。
+            如果解密后的内容不为空，则将其转换为 ByteBuffer，并从中读取 Long 类型的值，然后返回该值。
+            如果解密后的内容为空，则抛出异常。
      */
     public static Long decrypt(String decryptId) {
         if (StringUtils.isNotBlank(decryptId)) {
