@@ -30,6 +30,8 @@
 
 
     <!--
+    2024.4.3：其实这段没太看懂，问了gpt还是看不懂，md还是太菜了
+
     这段 XML 代码是一个 MyBatis 的 Mapper 文件中的一个 SQL 查询语句，用于根据给定条件查询文件列表。
     1. <select id="selectFileList" resultType="com.wuaro.pan.server.modules.file.vo.RPanUserFileVO">：
         这是一个 SQL 查询语句的定义，id 属性指定了这个查询语句的唯一标识符，resultType 属性指定了查询结果的返回类型。
@@ -52,9 +54,20 @@
         表示在查询结果中要求 file_type 列的值在 param.fileTypeArray 数组中。
     10. 最后的 AND del_flag = #{param.delFlag} 部分
         表示了另一个条件，要求查询结果中的 del_flag 列等于 #{param.delFlag} 的值。
+    11. <foreach collection="param.fileTypeArray" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+        这段代码是 MyBatis 中的 foreach 标签，用于在 SQL 查询中动态生成 IN 子句，从而实现对列表进行查询。
+        具体解释如下：
+        collection="param.fileTypeArray"：指定要遍历的集合，这里是 param 对象中的 fileTypeArray 属性。
+        open="("：指定在集合元素之前要添加的字符串，这里是左括号 "("。
+        close=")"：指定在集合元素之后要添加的字符串，这里是右括号 ")"。
+        item="item"：指定在遍历过程中，每个元素的别名，这里是 item。
+        separator=","：指定在集合元素之间的分隔符，这里是逗号 ","。
+        在 MyBatis 中，foreach 标签会将集合中的元素逐个取出，并使用 #{item} 占位符替换 SQL 查询语句中的参数，最终生成类似于 IN (value1, value2, value3) 的 SQL 语句，其中 value1, value2, value3 是集合中的元素值。这样可以方便地实现对列表中元素的动态查询。
     总体来说
-        这个查询语句会根据传入的条件动态构建 SQL 查询语句，从 r_pan_user_file 表中查询符合条件的文件信息。
-        查询条件包括 user_id、parent_id、file_type 数组和 del_flag 等。
+    这个查询语句会根据传入的条件动态构建 SQL 查询语句，从 r_pan_user_file 表中查询符合条件的文件信息。
+    查询条件包括 user_id、parent_id、file_type 数组和 del_flag 等。
     需要注意的是，${param.xxx} 是 MyBatis 的参数占位符语法，表示从传入的参数对象中获取指定属性的值。例如，#{param.userId} 表示获取传入参数对象的 userId 属性的值。
     -->
     <select id="selectFileList" resultType="com.wuaro.pan.server.modules.file.vo.RPanUserFileVO">
