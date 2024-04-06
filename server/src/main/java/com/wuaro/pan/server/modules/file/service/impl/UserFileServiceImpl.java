@@ -7,6 +7,7 @@ import com.wuaro.pan.core.utils.IdUtil;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
+import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 import com.wuaro.pan.server.modules.file.enums.FolderFlagEnum;
@@ -62,7 +63,7 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
     public Long createFolder(CreateFolderContext createFolderContext) {
         return saveUserFile(createFolderContext.getParentId(),
                 createFolderContext.getFolderName(),
-                FolderFlagEnum.YES,
+                FolderFlagEnum.YES,     //表示该文件是一个文件夹
                 null,
                 null,
                 createFolderContext.getUserId(),
@@ -96,9 +97,89 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         return baseMapper.selectFileList(context);
     }
 
+    /**
+     * 更新文件名称
+     * 1、校验更新文件名称的条件
+     * 2、执行更新文件名称的操作
+     *
+     * @param context
+     */
+    @Override
+    public void updateFilename(UpdateFilenameContext context) {
+        checkUpdateFilenameCondition(context);
+        doUpdateFilename(context);
+    }
+
 
     /************************************************private************************************************/
 
+    /**
+     * 执行文件重命名的操作
+     *
+     * @param context
+     */
+    private void doUpdateFilename(UpdateFilenameContext context) {
+        RPanUserFile entity = context.getEntity();
+        entity.setFilename(context.getNewFilename());
+        entity.setUpdateUser(context.getUserId());
+        entity.setUpdateTime(new Date());
+
+        if (!updateById(entity)) {
+            throw new RPanBusinessException("文件重命名失败");
+        }
+    }
+
+    /**
+     * 更新文件名称的条件校验
+     * <p>
+     * 1、文件ID是有效的
+     * 2、用户有权限更新该文件的文件名称
+     * 3、新旧文件名称不能一样
+     * 4、不能使用当前文件夹下面的子文件的名称
+     *
+     * @param context
+     */
+    /*
+    作用：
+        这段代码用于检查更新文件名的条件，确保新的文件名符合要求并且没有重复。
+    执行逻辑：
+        1. 首先，通过传入的 `fileId` 获取数据库中对应的 `RPanUserFile` 实体对象 `entity`。
+        2. 如果获取的 `entity` 为 null，说明传入的文件 ID 无效，抛出异常。
+        3. 如果当前登录用户的 ID 不等于文件的拥有者 ID，说明当前用户没有修改该文件名称的权限，抛出异常。
+        4. 如果新的文件名与当前文件名相同，说明没有修改，要求换一个新的文件名来修改，抛出异常。
+        5. 使用查询条件 `QueryWrapper` 检查新的文件名在相同父级目录下是否已经存在，如果存在，则说明新文件名已被占用，抛出异常。
+        6. 如果以上检查都通过，将获取到的 `entity` 设置到上下文对象 `context` 中，表示条件检查通过。
+        总体来说，这个方法确保了在更新文件名时，文件 ID 有效、权限符合要求、新文件名未被占用，并将相关信息设置到上下文对象中供后续使用。
+     */
+    private void checkUpdateFilenameCondition(UpdateFilenameContext context) {
+
+        Long fileId = context.getFileId();
+        RPanUserFile entity = getById(fileId);
+
+        if (Objects.isNull(entity)) {
+            throw new RPanBusinessException("该文件ID无效");
+        }
+
+        if (!Objects.equals(entity.getUserId(), context.getUserId())) {
+            throw new RPanBusinessException("当前登录用户没有修改该文件名称的权限");
+        }
+
+        if (Objects.equals(entity.getFilename(), context.getNewFilename())) {
+            throw new RPanBusinessException("请换一个新的文件名称来修改");
+        }
+
+        //如果表中能找到parent_id和filename都相同的文件数据，说明重复了，不能更改
+        QueryWrapper queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("parent_id", entity.getParentId());
+        queryWrapper.eq("filename", context.getNewFilename());
+        int count = count(queryWrapper);
+
+        if (count > 0) {
+            throw new RPanBusinessException("该文件名称已被占用");
+        }
+
+        context.setEntity(entity);
+    }
 
     /**
      * 保存用户文件的映射记录（将数据存入数据库表中）

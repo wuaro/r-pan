@@ -10,10 +10,12 @@ import com.wuaro.pan.server.modules.file.constants.FileConstants;
 //import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
+import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.po.CreateFolderPO;
+import com.wuaro.pan.server.modules.file.po.UpdateFilenamePO;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
@@ -152,6 +154,50 @@ public class FileController {
         return R.data(result);
     }
 
+    /**
+     * 创建文件夹
+     *
+     * @param createFolderPO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
+            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+            value = "创建文件夹"：接口的名称，表示这个接口的作用是创建文件夹。
+            notes = "该接口提供了创建文件夹的功能"：接口的详细说明，描述了这个接口的功能。
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE：指定请求的数据格式为 JSON 格式。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：指定响应的数据格式为 JSON 格式。
+        2. @GetMapping("file/folder")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/file/folder"。
+        3. @Validated：
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+            在这里，@Validated 注解用于验证 CreateFolderPO 对象中的字段是否符合规定的校验条件。
+            注解进行请求参数的验证，
+        4. @RequestBody：
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+            这里@RequestBody注解将请求的 JSON 数据映射为 CreateFolderPO 对象。
+    参数，
+        1. CreateFolderPO createFolderPO
+            创建文件夹的实体类
+    返回值：
+        返回的结果是一个 R 对象，包含加密后的文件夹ID。
+    执行逻辑：
+        1. CreateFolderContext context = fileConverter.createFolderPO2CreateFolderContext(createFolderPO);
+            调用 fileConverter 的方法将 CreateFolderPO 对象转换为 CreateFolderContext 对象。
+        2. Long fileId = iUserFileService.createFolder(context);
+            调用 iUserFileService 中的 createFolder方法 创建文件夹，并获取返回的文件夹 ID。
+        3. return R.data(IdUtil.encrypt(fileId));
+            将文件夹 ID 加密后返回给前端。
+     */
     @ApiOperation(
             value = "创建文件夹",
             notes = "该接口提供了创建文件夹的功能",
@@ -164,20 +210,62 @@ public class FileController {
         Long fileId = iUserFileService.createFolder(context);
         return R.data(IdUtil.encrypt(fileId));
     }
-//
-//    @ApiOperation(
-//            value = "文件重命名",
-//            notes = "该接口提供了文件重命名的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PutMapping("file")
-//    public R updateFilename(@Validated @RequestBody UpdateFilenamePO updateFilenamePO) {
-//        UpdateFilenameContext context = fileConverter.updateFilenamePO2UpdateFilenameContext(updateFilenamePO);
-//        iUserFileService.updateFilename(context);
-//        return R.success();
-//    }
-//
+
+    /**
+     * 文件重命名
+     *
+     * @param updateFilenamePO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
+            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+            value = "创建文件夹"：接口的名称，表示这个接口的作用是创建文件夹。
+            notes = "该接口提供了创建文件夹的功能"：接口的详细说明，描述了这个接口的功能。
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE：指定请求的数据格式为 JSON 格式。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：指定响应的数据格式为 JSON 格式。
+        2. @GetMapping("file")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/file"。
+        3. @Validated：
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+            在这里，@Validated 注解用于验证 UpdateFilenamePO 对象中的字段是否符合规定的校验条件。
+            注解进行请求参数的验证，
+        4. @RequestBody：
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+            这里@RequestBody注解将请求的 JSON 数据映射为 UpdateFilenamePO 对象。
+    参数，
+        1. UpdateFilenamePO updateFilenamePO
+            文件重命名的实体类
+    返回值：
+        R.success()
+    执行逻辑：
+        1. UpdateFilenameContext context = fileConverter.updateFilenamePO2UpdateFilenameContext(updateFilenamePO);
+            调用 fileConverter 的方法将 UpdateFilenamePO 对象转换为 UpdateFilenameContext 对象。
+        2. iUserFileService.updateFilename(context);
+            调用 iUserFileService 中的 updateFilename 给文件重命名。
+     */
+    @ApiOperation(
+            value = "文件重命名",
+            notes = "该接口提供了文件重命名的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PutMapping("file")
+    public R updateFilename(@Validated @RequestBody UpdateFilenamePO updateFilenamePO) {
+        UpdateFilenameContext context = fileConverter.updateFilenamePO2UpdateFilenameContext(updateFilenamePO);
+        iUserFileService.updateFilename(context);
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "批量删除文件",
 //            notes = "该接口提供了批量删除文件的功能",
