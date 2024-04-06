@@ -2,6 +2,7 @@ package com.wuaro.pan.server.modules.file.service;
 
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
+import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
@@ -38,4 +39,11 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @return
      */
     List<RPanUserFileVO> getFileList(QueryFileListContext context);
+
+    /**
+     * 更新文件名称
+     *
+     * @param context
+     */
+    void updateFilename(UpdateFilenameContext context);
 }

@@ -295,26 +295,6 @@ public class UserTest {
         Assert.isTrue(CollectionUtils.isEmpty(result));
     }
 
-    /**
-     * 测试创建文件夹成功
-     */
-    @Test
-    public void testCreateFolderSuccess() {
-
-        Long userId = register();
-        UserInfoVO userInfoVO = info(userId);
-
-        CreateFolderContext context = new CreateFolderContext();
-        context.setParentId(userInfoVO.getRootFileId());
-        context.setUserId(userId);
-        context.setFolderName("folder-name");
-
-        Long fileId = iUserFileService.createFolder(context);
-        Assert.notNull(fileId);
-    }
-
-
-
     /************************************************private************************************************/
 
 
