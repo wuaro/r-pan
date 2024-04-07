@@ -55,9 +55,9 @@ public interface FileConverter {
     @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
     UpdateFilenameContext updateFilenamePO2UpdateFilenameContext(UpdateFilenamePO updateFilenamePO);
 
-//    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
-//    DeleteFileContext deleteFilePO2DeleteFileContext(DeleteFilePO deleteFilePO);
-//
+    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
+    DeleteFileContext deleteFilePO2DeleteFileContext(DeleteFilePO deleteFilePO);
+
 //    @Mapping(target = "parentId", expression = "java(com.wuaro.pan.core.utils.IdUtil.decrypt(secUploadFilePO.getParentId()))")
 //    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
 //    SecUploadFileContext secUploadFilePO2SecUploadFileContext(SecUploadFilePO secUploadFilePO);
