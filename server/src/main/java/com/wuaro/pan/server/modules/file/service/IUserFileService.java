@@ -1,6 +1,7 @@
 package com.wuaro.pan.server.modules.file.service;
 
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.DeleteFileContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
@@ -46,4 +47,12 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @param context
      */
     void updateFilename(UpdateFilenameContext context);
+
+    /**
+     * 批量删除用户文件
+     *
+     * @param context
+     */
+    void deleteFile(DeleteFileContext context);
+
 }

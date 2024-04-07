@@ -9,12 +9,14 @@ import com.wuaro.pan.server.modules.file.constants.FileConstants;
 //import com.wuaro.pan.server.modules.file.context.*;
 //import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.DeleteFileContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.po.CreateFolderPO;
+import com.wuaro.pan.server.modules.file.po.DeleteFilePO;
 import com.wuaro.pan.server.modules.file.po.UpdateFilenamePO;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
@@ -266,24 +268,92 @@ public class FileController {
         return R.success();
     }
 
-//    @ApiOperation(
-//            value = "批量删除文件",
-//            notes = "该接口提供了批量删除文件的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @DeleteMapping("file")
-//    public R deleteFile(@Validated @RequestBody DeleteFilePO deleteFilePO) {
-//        DeleteFileContext context = fileConverter.deleteFilePO2DeleteFileContext(deleteFilePO);
-//
-//        String fileIds = deleteFilePO.getFileIds();
-//        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileIds).stream().map(IdUtil::decrypt).collect(Collectors.toList());
-//
-//        context.setFileIdList(fileIdList);
-//        iUserFileService.deleteFile(context);
-//        return R.success();
-//    }
-//
+    /**
+     * 批量删除文件
+     *
+     * @param deleteFilePO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
+            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+            value = "创建文件夹"：接口的名称，表示这个接口的作用是创建文件夹。
+            notes = "该接口提供了创建文件夹的功能"：接口的详细说明，描述了这个接口的功能。
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE：指定请求的数据格式为 JSON 格式。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：指定响应的数据格式为 JSON 格式。
+        2. @GetMapping("file")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "/file"。
+        3. @Validated：
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+            在这里，@Validated 注解用于验证 UpdateFilenamePO 对象中的字段是否符合规定的校验条件。
+            注解进行请求参数的验证，
+        4. @RequestBody：
+            @RequestBody 注解用于将 HTTP 请求体中的数据绑定到方法的参数上，通常用于处理 POST 请求中的 JSON 数据。
+            当客户端发送 POST 请求时，请求体中的 JSON 数据会被映射到被 @RequestBody 注解标记的方法参数上，从而可以在方法中直接使用这些数据。
+            说白了就是讲JSON格式的数据映射到PO类中
+            这里@RequestBody注解将请求的 JSON 数据映射为 UpdateFilenamePO 对象。
+    参数，
+        1. DeleteFilePO deleteFilePO
+            删除文件的实体类
+    返回值：
+        R.success()
+    执行逻辑：
+        1. DeleteFileContext context = fileConverter.deleteFilePO2DeleteFileContext(deleteFilePO);
+            调用 fileConverter 的方法将 DeleteFilePO 对象转换为 DeleteFileContext 对象。
+        2. String fileIds = deleteFilePO.getFileIds();
+            从 DeleteFilePO 对象中获取待删除文件的 ID 字符串。
+        3. List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                                            .splitToList(fileIds)
+                                            .stream()
+                                            .map(IdUtil::decrypt)
+                                            .collect(Collectors.toList());
+            逐行解释：
+                Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                    使用 RPanConstants.COMMON_SEPARATOR（也就是"__,__"） 分隔符创建一个分隔器 Splitter 对象。
+                .splitToList(fileIds)
+                    将 fileIds 字符串按照分隔符分割为一个字符串列表。
+                .stream()
+                    将字符串列表转换为流，以便进行后续操作。
+                .map(IdUtil::decrypt)
+                    对流中的每个元素（即分割出来的子字符串）应用 IdUtil::decrypt 方法进行解密操作。
+                .collect(Collectors.toList())
+                    将解密后的长整型值收集到一个新的列表中，最终得到 fileIdList，其中包含了解密后的文件 ID 的长整型值。
+            总而言之：这段代码是使用 Java 8 的 Stream API 将分割后的文件 ID 列表转换为 Long 类型的文件 ID 列表，
+            并且通过 IdUtil::decrypt 方法解密每个文件 ID。最后得到一个解密后的文件 ID 列表。
+        3. context.setFileIdList(fileIdList);
+            将解密后的文件 ID 列表设置到上下文对象 context 中，表示待删除的文件 ID 列表。
+        4. iUserFileService.deleteFile(context);
+            调用 iUserFileService 的 deleteFile 方法，传入上下文对象 context，执行实际的文件删除操作。
+     */
+    @ApiOperation(
+            value = "批量删除文件",
+            notes = "该接口提供了批量删除文件的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @DeleteMapping("file")
+    public R deleteFile(@Validated @RequestBody DeleteFilePO deleteFilePO) {
+        DeleteFileContext context = fileConverter.deleteFilePO2DeleteFileContext(deleteFilePO);
+
+        String fileIds = deleteFilePO.getFileIds();
+        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR)
+                                        .splitToList(fileIds)
+                                        .stream()
+                                        .map(IdUtil::decrypt)
+                                        .collect(Collectors.toList());
+
+        context.setFileIdList(fileIdList);
+        iUserFileService.deleteFile(context);
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "文件秒传",
 //            notes = "该接口提供了文件秒传的功能",

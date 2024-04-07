@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuaro.pan.core.constants.RPanConstants;
 import com.wuaro.pan.core.exception.RPanBusinessException;
 import com.wuaro.pan.core.utils.IdUtil;
+import com.wuaro.pan.server.common.event.file.DeleteFileEvent;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
 import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
+import com.wuaro.pan.server.modules.file.context.DeleteFileContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
@@ -15,25 +17,15 @@ import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.mapper.RPanUserFileMapper;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
 
 import java.util.Date;
 
@@ -50,7 +42,14 @@ import java.util.Date;
  */
 @Service(value = "userFileService")
 public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUserFile>
-        implements IUserFileService {
+        implements IUserFileService , ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * 创建文件夹信息
@@ -110,8 +109,152 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         doUpdateFilename(context);
     }
 
+    /**
+     * 批量删除用户文件
+     * <p>
+     * 1、校验删除的条件
+     * 2、执行批量删除的动作
+     * 3、发布批量删除文件的事件，给其他模块订阅使用
+     *
+     * @param context
+     */
+    @Override
+    public void deleteFile(DeleteFileContext context) {
+        checkFileDeleteCondition(context);
+        doDeleteFile(context);
+        afterFileDelete(context);
+    }
+
 
     /************************************************private************************************************/
+
+    /**
+     * 文件删除的后置操作
+     *
+     * 1、对外发布文件删除的事件
+     *
+     * @param context
+     */
+    /*
+    执行逻辑：
+        1.  DeleteFileEvent deleteFileEvent = new DeleteFileEvent(this, context.getFileIdList());
+            创建一个 DeleteFileEvent 对象，该对象包含了文件删除事件的相关信息，例如事件源和文件 ID 列表。
+            this 表示当前对象是事件源，context.getFileIdList() 获取文件 ID 列表。
+        2.  applicationContext.publishEvent(deleteFileEvent);
+            调用 applicationContext 对象的 publishEvent 方法，将创建的文件删除事件发布到应用程序上下文中，
+            通知相关的监听器处理这个事件。
+     */
+    private void afterFileDelete(DeleteFileContext context) {
+        DeleteFileEvent deleteFileEvent = new DeleteFileEvent(this,context.getFileIdList());
+        applicationContext.publishEvent(deleteFileEvent);
+    }
+
+    /**
+     * 执行文件删除的操作
+     * 这里是逻辑删除，并不会在数据库中真的删除，而是会将del_flag设置为true
+     *
+     * @param context
+     */
+    /*
+    执行逻辑：
+        1.  List<Long> fileIdList = context.getFileIdList();
+            UpdateWrapper updateWrapper = new UpdateWrapper();
+            updateWrapper.in("file_id", fileIdList);
+            从传入的 context 中获取要删除的文件 ID 列表。
+            创建一个更新操作的包装器 updateWrapper。
+            在包装器中设置条件，表示要删除的文件 ID 在 fileIdList 列表中。
+        2.  updateWrapper.set("del_flag", DelFlagEnum.YES.getCode());
+            updateWrapper.set("update_time", new Date());
+            设置更新操作，将文件的 del_flag 字段设为已删除的状态。
+            设置更新操作，将文件的 update_time 字段设为当前时间。
+        3. 如果删除失败则报错
+     */
+    private void doDeleteFile(DeleteFileContext context) {
+        List<Long> fileIdList = context.getFileIdList();
+
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.in("file_id", fileIdList);
+        updateWrapper.set("del_flag", DelFlagEnum.YES.getCode());
+        updateWrapper.set("update_time", new Date());
+
+        if (!update(updateWrapper)) {
+            throw new RPanBusinessException("文件删除失败");
+        }
+    }
+
+    /**
+     * 删除文件之前的前置校验
+     * <p>
+     * 1、文件ID合法校验
+     * 2、用户拥有删除该文件的权限
+     *
+     * @param context
+     */
+    /*
+    执行逻辑：
+        1. `List<Long> fileIdList = context.getFileIdList();`
+            从传入的 `DeleteFileContext` 中获取文件 ID 列表。
+        2. `List<RPanUserFile> rPanUserFiles = listByIds(fileIdList);`
+            根据文件 ID 列表从数据库中查询对应的文件记录。
+        3. `if (rPanUserFiles.size() != fileIdList.size()) { throw new RPanBusinessException("存在不合法的文件记录"); }`
+            检查查询到的文件记录数量 是否与 传入的文件 ID 数量一致，如果不一致说明存在不合法的文件记录。
+        4. `Set<Long> fileIdSet = rPanUserFiles.stream().map(RPanUserFile::getFileId).collect(Collectors.toSet());`
+            将查询到的文件记录转换为文件 ID 的集合。
+            也就是将 rPanUserFiles 列表中的每个 RPanUserFile 对象映射为其对应的文件 ID，并将这些文件 ID 放入一个 Set<Long> 集合中。
+            逐行解释：
+                rPanUserFiles.stream()
+                    将 rPanUserFiles 列表转换为流，以便进行后续的操作。
+                .map(RPanUserFile::getFileId)
+                    使用 map 操作将 RPanUserFile 对象映射为其对应的文件 ID。
+                    这里使用了 Java 8 的方法引用语法 RPanUserFile::getFileId，它等同于 lambda 表达式 (file) -> file.getFileId()。
+                    说白了就是把一个RPanUserFile的list转化成一个getFileId的list，其中的getFileId对应原本list中每一个RPanUserFile的fileId
+                .collect(Collectors.toSet())：
+                    使用 collect 收集操作，将流中的元素收集到一个 Set<Long> 集合中。
+                    这里使用了 Collectors.toSet()，表示收集为一个集合，集合中的元素不重复！！！
+                    如果有重复的fileId，会被忽略，不进行存储，按理来讲，正常情况应该是每个文件id都是不同的
+        5. `int oldSize = fileIdSet.size();
+            fileIdSet.addAll(fileIdList);
+            int newSize = fileIdSet.size();`
+            将传入的文件 ID 列表加入到文件 ID 集合中，然后比较加入前后集合的大小，如果不一致说明存在重复的文件 ID。
+        6. `if (oldSize != newSize) { throw new RPanBusinessException("存在不合法的文件记录"); }`
+            如果加入后集合大小发生变化，说明存在重复的文件 ID，抛出异常。
+        7. `Set<Long> userIdSet = rPanUserFiles.stream().map(RPanUserFile::getUserId).collect(Collectors.toSet());`
+            将查询到的文件记录转换为用户 ID 的集合，和上面的fileIdSet是一个道理
+            只不过这里的userIdSet里应该只有一个元素，因为批量删除的一定是同一个用户的文件（你总不可能去删除别人的文件吧！）
+            所以所有文件的userID应该都是重复的才对，所以最终只能存进去一个userID，剩下重复的全部被忽略了
+        8. `if (userIdSet.size() != 1) { throw new RPanBusinessException("存在不合法的文件记录"); }`
+            检查用户 ID 集合的大小是否为1，如果不是1说明存在不合法的文件记录。
+        9. `Long dbUserId = userIdSet.stream().findFirst().get();
+            if (!Objects.equals(dbUserId, context.getUserId())) { throw new RPanBusinessException("当前登录用户没有删除该文件的权限"); }`
+            从用户 ID 集合中获取用户 ID，并与传入的删除操作上下文中的用户 ID 进行比较，如果不一致说明当前登录用户没有删除该文件的权限，抛出异常。
+     */
+    private void checkFileDeleteCondition(DeleteFileContext context) {
+        List<Long> fileIdList = context.getFileIdList();
+
+        List<RPanUserFile> rPanUserFiles = listByIds(fileIdList);
+        if (rPanUserFiles.size() != fileIdList.size()) {
+            throw new RPanBusinessException("存在不合法的文件记录");
+        }
+
+        Set<Long> fileIdSet = rPanUserFiles.stream().map(RPanUserFile::getFileId).collect(Collectors.toSet());
+        int oldSize = fileIdSet.size();
+        fileIdSet.addAll(fileIdList);
+        int newSize = fileIdSet.size();
+
+        if (oldSize != newSize) {
+            throw new RPanBusinessException("存在不合法的文件记录");
+        }
+
+        Set<Long> userIdSet = rPanUserFiles.stream().map(RPanUserFile::getUserId).collect(Collectors.toSet());
+        if (userIdSet.size() != 1) {
+            throw new RPanBusinessException("存在不合法的文件记录");
+        }
+
+        Long dbUserId = userIdSet.stream().findFirst().get();
+        if (!Objects.equals(dbUserId, context.getUserId())) {
+            throw new RPanBusinessException("当前登录用户没有删除该文件的权限");
+        }
+    }
 
     /**
      * 执行文件重命名的操作
