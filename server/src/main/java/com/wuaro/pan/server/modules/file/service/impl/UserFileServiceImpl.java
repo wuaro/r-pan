@@ -3,20 +3,22 @@ package com.wuaro.pan.server.modules.file.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuaro.pan.core.constants.RPanConstants;
 import com.wuaro.pan.core.exception.RPanBusinessException;
+import com.wuaro.pan.core.utils.FileUtils;
 import com.wuaro.pan.core.utils.IdUtil;
 import com.wuaro.pan.server.common.event.file.DeleteFileEvent;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
-import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
-import com.wuaro.pan.server.modules.file.context.DeleteFileContext;
-import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
-import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
+import com.wuaro.pan.server.modules.file.context.*;
+import com.wuaro.pan.server.modules.file.entity.RPanFile;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
+import com.wuaro.pan.server.modules.file.enums.FileTypeEnum;
 import com.wuaro.pan.server.modules.file.enums.FolderFlagEnum;
+import com.wuaro.pan.server.modules.file.service.IFileService;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.mapper.RPanUserFileMapper;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ import java.util.Date;
  */
 /*
     注解：
-        1. @Service(value = "userFileService")
+        1.  @Service(value = "userFileService")
             将 UserFileService 类标识为一个服务类，并指定在 Spring 容器中的名称为 "userFileService"，
             可以通过这个名称在其他地方引用这个服务类。
  */
@@ -44,10 +46,15 @@ import java.util.Date;
 public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUserFile>
         implements IUserFileService , ApplicationContextAware {
 
+    @Autowired
+    private IFileService iFileService;
+
+
     private ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
+
         this.applicationContext = applicationContext;
     }
 
@@ -111,7 +118,7 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     /**
      * 批量删除用户文件
-     * <p>
+     *
      * 1、校验删除的条件
      * 2、执行批量删除的动作
      * 3、发布批量删除文件的事件，给其他模块订阅使用
@@ -125,8 +132,61 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         afterFileDelete(context);
     }
 
+    /**
+     * 文件秒传功能
+     *
+     * 1、判断用户之前是否上传过该文件
+     * 2、如果上传过该文件，只需要生成一个该文件和当前用户在指定文件夹下面的关联关系即可
+     *
+     * @param context
+     * @return true 代表用户之前上传过相同文件并成功挂在了关联关系 false 用户没有上传过该文件，请手动执行上传逻辑
+     */
+    /*
+    执行逻辑：
+        这段代码是一个Java方法，看起来是用于实现文件上传功能的。让我们逐步解析它的功能：
+        1. 首先，通过调用`getFileListByUserIdAndIdentifier`方法获取用户ID和标识符对应的文件列表。
+        2. 如果文件列表不为空（即`CollectionUtils.isNotEmpty(fileList)`返回true），
+            则从文件列表中获取第一个文件（`fileList.get(RPanConstants.ZERO_INT)`）。
+        3. 调用`saveUserFile`方法保存文件信息，包括父ID、文件名、文件夹标志、文件类型、文件ID、用户ID和文件大小描述。
+        4. 最后，如果文件列表不为空，则返回true，表示上传成功；否则返回false，表示上传失败。
+        需要注意的是，这段代码假设了`getFileListByUserIdAndIdentifier`、`saveUserFile`和其他相关方法已经在代码中定义并实现了。
+        这些方法的具体实现会影响到整个文件上传流程的执行结果。
+     */
+    @Override
+    public boolean secUpload(SecUploadFileContext context) {
+        List<RPanFile> fileList = getFileListByUserIdAndIdentifier(context.getUserId(), context.getIdentifier());
+        if (CollectionUtils.isNotEmpty(fileList)) {
+            RPanFile record = fileList.get(RPanConstants.ZERO_INT);
+            saveUserFile(context.getParentId(),
+                    context.getFilename(),
+                    FolderFlagEnum.NO,
+                    FileTypeEnum.getFileTypeCode(FileUtils.getFileSuffix(context.getFilename())),
+                    record.getFileId(),
+                    context.getUserId(),
+                    record.getFileSizeDesc());
+            return true;
+        }
+        return false;
+    }
+
 
     /************************************************private************************************************/
+
+    /**
+     * 查询用户文件列表根据文件的唯一标识
+     *
+     * @param userId
+     * @param identifier
+     * @return
+     */
+    private List<RPanFile> getFileListByUserIdAndIdentifier(Long userId, String identifier) {
+        QueryRealFileListContext context = new QueryRealFileListContext();
+        context.setUserId(userId);
+        context.setIdentifier(identifier);
+
+        //之所以是getFileList是因为在秒传情况下我们不能保证在高并发情况下，文件的标识是唯一标识，所以可能查询出来多条数据，要用list来接收
+        return iFileService.getFileList(context);
+    }
 
     /**
      * 文件删除的后置操作
@@ -274,7 +334,7 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     /**
      * 更新文件名称的条件校验
-     * <p>
+     *
      * 1、文件ID是有效的
      * 2、用户有权限更新该文件的文件名称
      * 3、新旧文件名称不能一样

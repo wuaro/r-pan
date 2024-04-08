@@ -1,9 +1,6 @@
 package com.wuaro.pan.server.modules.file.service;
 
-import com.wuaro.pan.server.modules.file.context.CreateFolderContext;
-import com.wuaro.pan.server.modules.file.context.DeleteFileContext;
-import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
-import com.wuaro.pan.server.modules.file.context.UpdateFilenameContext;
+import com.wuaro.pan.server.modules.file.context.*;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
@@ -55,4 +52,11 @@ public interface IUserFileService extends IService<RPanUserFile> {
      */
     void deleteFile(DeleteFileContext context);
 
+    /**
+     * 文件秒传功能
+     *
+     * @param context
+     * @return
+     */
+    boolean secUpload(SecUploadFileContext context);
 }
