@@ -13,6 +13,7 @@ import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.enums.MergeFlagEnum;
 //import com.wuaro.pan.server.modules.file.service.IFileChunkService;
 //import com.wuaro.pan.server.modules.file.service.IFileService;
+import com.wuaro.pan.server.modules.file.service.IFileService;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.user.context.UserLoginContext;
@@ -46,6 +47,9 @@ public class FileTest {
 
     @Autowired
     private IUserService iUserService;
+
+    @Autowired
+    private IFileService iFileService;
 
     /**
      * 测试用户查询文件列表成功
@@ -284,6 +288,70 @@ public class FileTest {
         deleteFileContext.setUserId(userId);
 
         iUserFileService.deleteFile(deleteFileContext);
+    }
+
+    /**
+     * 校验秒传文件成功
+     */
+    @Test
+    public void testSecUploadSuccess() {
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
+
+        String identifier = "123456789";
+
+        RPanFile record = new RPanFile();
+        record.setFileId(IdUtil.get());
+        record.setFilename("filename");
+        record.setRealPath("realpath");
+        record.setFileSize("fileSize");
+        record.setFileSizeDesc("fileSizeDesc");
+        record.setFilePreviewContentType("");
+        record.setIdentifier(identifier);
+        record.setCreateUser(userId);
+        record.setCreateTime(new Date());
+        iFileService.save(record);
+
+        SecUploadFileContext context = new SecUploadFileContext();
+        context.setIdentifier(identifier);
+        context.setFilename("filename");
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+
+        boolean result = iUserFileService.secUpload(context);
+        Assert.isTrue(result);
+    }
+
+    /**
+     * 校验秒传文件失败
+     */
+    @Test
+    public void testSecUploadFail() {
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
+
+        String identifier = "123456789";
+
+        RPanFile record = new RPanFile();
+        record.setFileId(IdUtil.get());
+        record.setFilename("filename");
+        record.setRealPath("realpath");
+        record.setFileSize("fileSize");
+        record.setFileSizeDesc("fileSizeDesc");
+        record.setFilePreviewContentType("");
+        record.setIdentifier(identifier);
+        record.setCreateUser(userId);
+        record.setCreateTime(new Date());
+        iFileService.save(record);
+
+        SecUploadFileContext context = new SecUploadFileContext();
+        context.setIdentifier(identifier + "_update");
+        context.setFilename("filename");
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+
+        boolean result = iUserFileService.secUpload(context);
+        Assert.isFalse(result);
     }
 
     /************************************************private************************************************/
