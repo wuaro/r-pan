@@ -54,11 +54,11 @@
             <version>1.0</version>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>com.wuaro.pan</groupId>-->
-        <!--            <artifactId>r-pan-storage-engine-fastdfs</artifactId>-->
-        <!--            <version>1.0</version>-->
-        <!--        </dependency>-->
+                <dependency>
+                    <groupId>com.wuaro.pan</groupId>
+                    <artifactId>r-pan-storage-engine-local</artifactId>
+                    <version>1.0</version>
+                </dependency>
         <!--        <dependency>-->
         <!--            <groupId>com.wuaro.pan</groupId>-->
         <!--            <artifactId>r-pan-storage-engine-oss</artifactId>-->

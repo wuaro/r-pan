@@ -77,7 +77,7 @@ public class FileUtils {
 
     /**
      * 生成文件的存储路径
-     * <p>
+     *
      * 生成规则：基础路径 + 年 + 月 + 日 + 随机的文件名称
      *
      * @param basePath
@@ -100,7 +100,7 @@ public class FileUtils {
     }
 
     /**
-     * 将文件的输入流写入到文件中
+     * 将文件的输入流写入到文件中(文件上传的最核心方法，使用零拷贝)
      * 使用底层的sendfile零拷贝来提高传输效率
      *
      * @param inputStream
@@ -134,7 +134,7 @@ public class FileUtils {
 
     /**
      * 生成默认的文件存储路径
-     * <p>
+     *
      * 生成规则：当前登录用户的文件目录 + rpan
      *
      * @return

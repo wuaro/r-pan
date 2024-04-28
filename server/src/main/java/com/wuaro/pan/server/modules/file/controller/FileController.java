@@ -12,10 +12,7 @@ import com.wuaro.pan.server.modules.file.context.*;
 import com.wuaro.pan.server.modules.file.converter.FileConverter;
 import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.po.*;
-import com.wuaro.pan.server.modules.file.po.CreateFolderPO;
-import com.wuaro.pan.server.modules.file.po.DeleteFilePO;
-import com.wuaro.pan.server.modules.file.po.SecUploadFilePO;
-import com.wuaro.pan.server.modules.file.po.UpdateFilenamePO;
+import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
@@ -411,19 +408,19 @@ public class FileController {
         return R.fail("文件唯一标识不存在，请手动执行文件上传");
     }
 
-//    @ApiOperation(
-//            value = "单文件上传",
-//            notes = "该接口提供了单文件上传的功能",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/upload")
-//    public R upload(@Validated FileUploadPO fileUploadPO) {
-//        FileUploadContext context = fileConverter.fileUploadPO2FileUploadContext(fileUploadPO);
-//        iUserFileService.upload(context);
-//        return R.success();
-//    }
-//
+    @ApiOperation(
+            value = "单文件上传",
+            notes = "该接口提供了单文件上传的功能",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/upload")
+    public R upload(@Validated FileUploadPO fileUploadPO) {
+        FileUploadContext context = fileConverter.fileUploadPO2FileUploadContext(fileUploadPO);
+        iUserFileService.upload(context);
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "文件分片上传",
 //            notes = "该接口提供了文件分片上传的功能",
