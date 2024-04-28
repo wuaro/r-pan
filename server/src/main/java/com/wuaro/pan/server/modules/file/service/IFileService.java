@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.file.service;
 
+import com.wuaro.pan.server.modules.file.context.FileSaveContext;
 import com.wuaro.pan.server.modules.file.context.QueryRealFileListContext;
 import com.wuaro.pan.server.modules.file.entity.RPanFile;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,5 +21,12 @@ public interface IFileService extends IService<RPanFile> {
      * @return
      */
     List<RPanFile> getFileList(QueryRealFileListContext context);
+
+    /**
+     * 上传单文件并保存实体记录
+     *
+     * @param context
+     */
+    void saveFile(FileSaveContext context);
 
 }
