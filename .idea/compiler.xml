@@ -7,14 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="r-pan-storage-engine-oss" />
         <module name="r-pan-swagger2" />
-        <module name="r-pan-core" />
         <module name="r-pan-cache-core" />
         <module name="r-pan-cache-redis" />
+        <module name="r-pan-storage-engine-local" />
         <module name="r-pan-cache-caffeine" />
         <module name="r-pan-schedule" />
-        <module name="r-pan-mybatis-plus" />
         <module name="r-pan-distribution" />
+        <module name="r-pan-storage-engine-fastdfs" />
+        <module name="r-pan-core" />
+        <module name="r-pan-storage-engine-core" />
+        <module name="r-pan-mybatis-plus" />
         <module name="r-pan-web" />
       </profile>
       <profile name="Annotation profile for r-pan-parent" enabled="true">
@@ -36,11 +40,6 @@
       <module name="framework" target="1.8" />
       <module name="r-pan-core1" target="1.8" />
       <module name="r-pan-server1" target="1.8" />
-      <module name="r-pan-storage-engine" target="1.8" />
-      <module name="r-pan-storage-engine-core" target="1.8" />
-      <module name="r-pan-storage-engine-fastdfs" target="1.8" />
-      <module name="r-pan-storage-engine-local" target="1.8" />
-      <module name="r-pan-storage-engine-oss" target="1.8" />
       <module name="server" target="1.8" />
       <module name="untitled" target="1.8" />
     </bytecodeTargetLevel>
