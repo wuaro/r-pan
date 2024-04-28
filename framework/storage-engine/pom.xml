@@ -2,25 +2,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>r-pan-parent</artifactId>
         <groupId>com.wuaro.pan</groupId>
+        <artifactId>r-pan-framework</artifactId>
         <version>1.0</version>
     </parent>
-    <modules>
-        <module>web</module>
-        <module>swagger2</module>
-        <module>core</module>
-        <module>orm</module>
-        <module>cache</module>
-        <module>schedule</module>
-        <module>storage-engine</module>
-    </modules>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>r-pan-framework</artifactId>
-
+    <artifactId>r-pan-storage-engine</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>storage-engine-core</module>
+        <module>storage-engine-local</module>
+        <module>storage-engine-fastdfs</module>
+        <module>storage-engine-oss</module>
+        <module>storage-engine-core</module>
+        <module>storage-engine-local</module>
+        <module>storage-engine-oss</module>
+        <module>storage-engine-fastdfs</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
