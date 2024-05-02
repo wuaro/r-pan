@@ -3,6 +3,7 @@ package com.wuaro.pan.storage.engine.local;
 import com.wuaro.pan.core.utils.FileUtils;
 import com.wuaro.pan.storage.engine.core.AbstractStorageEngine;
 import com.wuaro.pan.storage.engine.core.context.DeleteFileContext;
+import com.wuaro.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.wuaro.pan.storage.engine.core.context.StoreFileContext;
 import com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +52,20 @@ public class LocalStorageEngine extends AbstractStorageEngine {
     @Override
     protected void doDelete(DeleteFileContext context) throws IOException {
         FileUtils.deleteFiles(context.getRealFilePathList());
+    }
+
+    /**
+     * 执行保存文件分片
+     * 下沉到底层去实现
+     *
+     * @param context
+     * @throws IOException
+     */
+    @Override
+    protected void doStoreChunk(StoreFileChunkContext context) throws IOException {
+        String basePath = config.getRootFileChunkPath();
+        String realFilePath = FileUtils.generateStoreFileChunkRealPath(basePath, context.getIdentifier(), context.getChunkNumber());
+        FileUtils.writeStream2File(context.getInputStream(), new File(realFilePath), context.getTotalSize());
+        context.setRealPath(realFilePath);
     }
 }

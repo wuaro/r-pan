@@ -15,6 +15,7 @@ import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
+import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -421,8 +422,11 @@ public class FileController {
             在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
             value = "单文件上传"：接口的名称，表示这个接口的作用是单文件上传。
             notes = "该接口提供了单文件上传的功能"：接口的详细说明，描述了这个接口的功能。
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE：指定请求的数据格式为 JSON 格式。
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：指定响应的数据格式为 JSON 格式。
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE：
+                表示该接口方法接受的请求内容类型为 multipart/form-data，这种类型通常用于上传文件或表单数据。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：
+                表示该接口方法返回的响应内容类型为 application/json，编码格式为 UTF-8。
+                这种类型通常用于返回 JSON 格式的数据给前端。
         2. @GetMapping("file/upload")：
             这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "file/upload"。
         3. @Validated：
@@ -459,19 +463,48 @@ public class FileController {
         return R.success();
     }
 
-//    @ApiOperation(
-//            value = "文件分片上传",
-//            notes = "该接口提供了文件分片上传的功能",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/chunk-upload")
-//    public R<FileChunkUploadVO> chunkUpload(@Validated FileChunkUploadPO fileChunkUploadPO) {
-//        FileChunkUploadContext context = fileConverter.fileChunkUploadPO2FileChunkUploadContext(fileChunkUploadPO);
-//        FileChunkUploadVO vo = iUserFileService.chunkUpload(context);
-//        return R.data(vo);
-//    }
-//
+    /*
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
+            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+            value = "文件分片上传"：接口的名称，表示这个接口的作用是单文件分片上传。
+            notes = "该接口提供了单文件上传的功能"：接口的详细说明，描述了这个接口的功能。
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE：
+                表示该接口方法接受的请求内容类型为 multipart/form-data，这种类型通常用于上传文件或表单数据。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：
+                表示该接口方法返回的响应内容类型为 application/json，编码格式为 UTF-8。
+                这种类型通常用于返回 JSON 格式的数据给前端。
+        2. @GetMapping("file/chunk-upload")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "file/chunk-upload"。
+        3. @Validated：
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+            在这里，@Validated 注解用于验证 SecUploadFilePO 对象中的字段是否符合规定的校验条件。
+            注解进行请求参数的验证
+    参数，
+        1. FileChunkUploadPO fileChunkUploadPO
+            文件分片上传的实体类
+    返回值：
+        R<FileChunkUploadVO>
+     */
+    @ApiOperation(
+            value = "文件分片上传",
+            notes = "该接口提供了文件分片上传的功能",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/chunk-upload")
+    public R<FileChunkUploadVO> chunkUpload(@Validated FileChunkUploadPO fileChunkUploadPO) {
+        FileChunkUploadContext context = fileConverter.fileChunkUploadPO2FileChunkUploadContext(fileChunkUploadPO);
+        FileChunkUploadVO vo = iUserFileService.chunkUpload(context);
+        return R.data(vo);
+    }
+
 //    @ApiOperation(
 //            value = "查询已经上传的文件分片列表",
 //            notes = "该接口提供了查询已经上传的文件分片列表的功能",

@@ -5,6 +5,7 @@ import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
+import com.wuaro.pan.storage.engine.core.context.StoreFileChunkContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -69,14 +70,14 @@ public interface FileConverter {
     @Mapping(target = "record", ignore = true)
     FileSaveContext fileUploadContext2FileSaveContext(FileUploadContext context);
 
-//    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
-//    FileChunkUploadContext fileChunkUploadPO2FileChunkUploadContext(FileChunkUploadPO fileChunkUploadPO);
-//
-//    FileChunkSaveContext fileChunkUploadContext2FileChunkSaveContext(FileChunkUploadContext context);
-//
-//    @Mapping(target = "realPath", ignore = true)
-//    StoreFileChunkContext fileChunkSaveContext2StoreFileChunkContext(FileChunkSaveContext context);
-//
+    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
+    FileChunkUploadContext fileChunkUploadPO2FileChunkUploadContext(FileChunkUploadPO fileChunkUploadPO);
+
+    FileChunkSaveContext fileChunkUploadContext2FileChunkSaveContext(FileChunkUploadContext context);
+
+    @Mapping(target = "realPath", ignore = true)
+    StoreFileChunkContext fileChunkSaveContext2StoreFileChunkContext(FileChunkSaveContext context);
+
 //    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
 //    QueryUploadedChunksContext queryUploadedChunksPO2QueryUploadedChunksContext(QueryUploadedChunksPO queryUploadedChunksPO);
 //
