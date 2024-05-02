@@ -408,6 +408,44 @@ public class FileController {
         return R.fail("文件唯一标识不存在，请手动执行文件上传");
     }
 
+    /**
+     * 单文件上传
+     *
+     * @param fileUploadPO
+     * @return
+     */
+    /*
+    注解：
+        1. @ApiOperation：
+            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
+            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
+            value = "单文件上传"：接口的名称，表示这个接口的作用是单文件上传。
+            notes = "该接口提供了单文件上传的功能"：接口的详细说明，描述了这个接口的功能。
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE：指定请求的数据格式为 JSON 格式。
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：指定响应的数据格式为 JSON 格式。
+        2. @GetMapping("file/upload")：
+            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "file/upload"。
+        3. @Validated：
+            @Validated 是 Spring 框架中用来进行参数校验的注解。
+            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
+            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
+            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
+            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
+            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
+            在这里，@Validated 注解用于验证 SecUploadFilePO 对象中的字段是否符合规定的校验条件。
+            注解进行请求参数的验证
+    参数，
+        1. FileUploadPO fileUploadPO
+            单文件上传的实体类
+    返回值：
+        R.success()
+    执行逻辑：
+        1. FileUploadContext context = fileConverter.fileUploadPO2FileUploadContext(fileUploadPO);
+            调用 fileConverter 的方法将 FileUploadPO 对象转换为 FileUploadContext 对象。
+        2. iUserFileService.upload(context);
+            执行单文件上传
+        3. 如果有返回值则说明操作成功，否则说明操作失败
+     */
     @ApiOperation(
             value = "单文件上传",
             notes = "该接口提供了单文件上传的功能",
