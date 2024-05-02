@@ -17,6 +17,7 @@ import com.wuaro.pan.server.modules.file.enums.FolderFlagEnum;
 import com.wuaro.pan.server.modules.file.service.IFileService;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.mapper.RPanUserFileMapper;
+import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     @Autowired
     private FileConverter fileConverter;
+
+    @Autowired
+    private FileChunkServiceImpl iFileChunkService;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -199,6 +203,27 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
                 context.getUserId(),
                 context.getRecord().getFileSizeDesc());
     }
+
+    /**
+     * 文件分片上传
+     *
+     * 1. 上传实体文件
+     * 2. 保存分片文件记录
+     * 3. 校验是否全部分片上传完成
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public FileChunkUploadVO chunkUpload(FileChunkUploadContext context) {
+        FileChunkSaveContext fileChunkSaveContext = fileConverter.fileChunkUploadContext2FileChunkSaveContext(context);
+        iFileChunkService.saveChunkFile(fileChunkSaveContext);
+        FileChunkUploadVO vo = new FileChunkUploadVO();
+        vo.setMergeFlag(fileChunkSaveContext.getMergeFlagEnum().getCode());
+        return vo;
+    }
+
+
 
 
     /************************************************private************************************************/

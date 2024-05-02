@@ -1,6 +1,7 @@
 package com.wuaro.pan.storage.engine.core;
 
 import com.wuaro.pan.storage.engine.core.context.DeleteFileContext;
+import com.wuaro.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.wuaro.pan.storage.engine.core.context.StoreFileContext;
 
 import java.io.IOException;
@@ -24,4 +25,12 @@ public interface StorageEngine {
      * @throws IOException
      */
     void delete(DeleteFileContext context) throws IOException;
+
+    /**
+     * 存储物理文件的分片
+     *
+     * @param context
+     * @throws IOException
+     */
+    void storeChunk(StoreFileChunkContext context) throws IOException;
 }

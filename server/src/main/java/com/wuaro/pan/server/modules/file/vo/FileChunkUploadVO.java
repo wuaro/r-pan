@@ -10,8 +10,8 @@ import java.io.Serializable;
 @Data
 public class FileChunkUploadVO implements Serializable {
 
-    private static final long serialVersionUID = 7670192129580713809L;
 
+    private static final long serialVersionUID = -5836996655270266367L;
     @ApiModelProperty("是否需要合并文件 0 不需要 1 需要")
     private Integer mergeFlag;
 
