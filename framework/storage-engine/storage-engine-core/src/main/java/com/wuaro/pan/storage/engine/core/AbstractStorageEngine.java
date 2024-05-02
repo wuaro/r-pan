@@ -35,7 +35,7 @@ public abstract class AbstractStorageEngine implements StorageEngine {
 
     /**
      * 存储物理文件
-     * <p>
+     *
      * 1、参数校验
      * 2、执行动作
      *
@@ -58,6 +58,9 @@ public abstract class AbstractStorageEngine implements StorageEngine {
 
     /**
      * 校验上传物理文件的上下文信息
+     * 1. 文件名称不能为空
+     * 2. 文件的总大小不能为空
+     * 3. 文件不能为空
      *
      * @param context
      */
@@ -69,7 +72,7 @@ public abstract class AbstractStorageEngine implements StorageEngine {
 
     /**
      * 删除物理文件
-     * <p>
+     *
      * 1、参数校验
      * 2、执行动作
      *
@@ -92,7 +95,8 @@ public abstract class AbstractStorageEngine implements StorageEngine {
     protected abstract void doDelete(DeleteFileContext context) throws IOException;
 
     /**
-     * 校验删除物理文件的上下文信息
+     * 校验删除物理文件的上下文信息：
+     * 1. 判断要删除的文件列表是否为空，如果为空则抛出异常
      *
      * @param context
      */

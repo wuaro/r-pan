@@ -24,9 +24,15 @@ public class LocalStorageEngine extends AbstractStorageEngine {
     private LocalStorageEngineConfig config;
     /**
      * 执行保存物理文件的动作
-     * 下沉到具体的子类去实现
      *
      * @param context
+     */
+    /*
+    执行逻辑：
+        1. 获取基础路径
+        2. 生成文件的存储路径
+        3. 存储文件（零拷贝）
+        4. 将文件的存储路径存入StoreFileContext对象中
      */
     @Override
     protected void doStore(StoreFileContext context) throws IOException {
@@ -38,7 +44,6 @@ public class LocalStorageEngine extends AbstractStorageEngine {
 
     /**
      * 执行删除物理文件的动作
-     * 下沉到子类去实现
      *
      * @param context
      * @throws IOException

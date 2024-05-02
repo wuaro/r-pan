@@ -66,6 +66,15 @@ public class FileUtils {
      *
      * @param realFilePathList
      */
+    /*
+    参数：
+        1. 要删除的文件列表
+    执行逻辑：
+        1. 如果要删除的文件列表为空，则直接返回
+        2. 如果不为空，则遍历每个文件的路径，并使用org.apache.commons.io.FileUtils.forceDelete方法强制删除
+            这里之所以使用org.apache.commons.io.FileUtils.forceDelete方法
+            是因为这是删除本地的（注意是本地的！！！）物理文件，该文件就存储在当前计算机上！
+     */
     public static void deleteFiles(List<String> realFilePathList) throws IOException {
         if (CollectionUtils.isEmpty(realFilePathList)) {
             return;
@@ -84,6 +93,19 @@ public class FileUtils {
      * @param filename
      * @return
      */
+    /*
+    注意：
+        1. StringBuffer是一个操作字符串的工具类，append方法用于拼接字符串
+        2. 关于File.separator：
+            File.separator 是一个 Java 中的常量，它表示当前操作系统的文件分隔符。
+            在不同的操作系统中，文件路径的分隔符是不同的：
+                1. 在 Windows 系统中，文件路径的分隔符是反斜杠 \。
+                2. 在 Unix/Linux 系统中，文件路径的分隔符是正斜杠 /。
+        3. 关于UUIDUtil.getUUID()：
+            会生成一个类似550e8400-e29b-41d4-a716-446655440000的随机数
+        4. 文件路径：
+            基础路径\年\月\日\随机数+文件名称
+     */
     public static String generateStoreFileRealPath(String basePath, String filename) {
         return new StringBuffer(basePath)
                 .append(File.separator)
@@ -96,7 +118,6 @@ public class FileUtils {
                 .append(UUIDUtil.getUUID())
                 .append(getFileSuffix(filename))
                 .toString();
-
     }
 
     /**
@@ -107,8 +128,31 @@ public class FileUtils {
      * @param targetFile
      * @param totalSize
      */
+    /*
+    执行逻辑：
+        1. 创建文件
+        2. 使用 RandomAccessFile 类打开目标文件以进行读写操作
+            RandomAccessFile 允许对文件进行读取和写入操作，并且可以从文件的任意位置开始
+        3. 获取与 RandomAccessFile 关联的 FileChannel
+            FileChannel 是 Java NIO（New I/O）中的一个类，用于对文件进行高效的 I/O 操作
+        4. 使用 Channels 工具类的 newChannel 方法将 InputStream 转换为 ReadableByteChannel
+            ReadableByteChannel 是 Java NIO 中的一个接口，用于从通道中读取字节
+        5. 使用 FileChannel 的 transferFrom 方法将输入通道中的数据传输到输出通道
+            这个方法尝试从源通道（inputChannel）读取 totalSize 字节的数据，并写入到目标通道（outputChannel）
+            第二个参数 0L 是输出通道中的偏移量，表示从文件的哪个位置开始写入
+            如果 totalSize 为 null 或未知，则可能需要使用其他逻辑来确定何时停止传输
+        6. 关闭输入通道
+            关闭通道会释放与之关联的资源
+        7. 关闭输出通道
+        8. 关闭 RandomAccessFile
+            注意：在关闭 FileChannel 后，通常不需要再显式关闭 RandomAccessFile，因为 FileChannel 的关闭会关闭它
+        9. 关闭输入流
+            注意：这里的 inputStream.close() 是冗余的，因为 inputChannel 在关闭时已经关闭了其底层的流
+            但为了代码的完整性或明确性，有时开发者会显式关闭它
+     */
     public static void writeStream2File(InputStream inputStream, File targetFile, Long totalSize) throws IOException {
         createFile(targetFile);
+
         RandomAccessFile randomAccessFile = new RandomAccessFile(targetFile, "rw");
         FileChannel outputChannel = randomAccessFile.getChannel();
         ReadableByteChannel inputChannel = Channels.newChannel(inputStream);
@@ -138,6 +182,15 @@ public class FileUtils {
      * 生成规则：当前登录用户的文件目录 + rpan
      *
      * @return
+     */
+    /*
+    注意：
+        1. 关于System.getProperty("user.home")：
+            是一个Java系统属性，用于获取当前用户的主目录路径。
+            例如，
+                1. 在Windows系统上，System.getProperty("user.home") 可能返回
+                    类似 "C:\Users username" 的路径，其中 username 是当前用户的用户名。
+                2. 而在类Unix/Linux系统上，可能返回类似 /home/username 的路径。
      */
     public static String generateDefaultStoreFileRealPath() {
         return new StringBuffer(System.getProperty("user.home"))

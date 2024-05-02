@@ -104,6 +104,14 @@ public class FileServiceImpl extends ServiceImpl<RPanFileMapper, RPanFile>
      * @param userId
      * @return
      */
+    /*
+    执行逻辑：
+        1. 组装文件记录对象
+        2. 尝试保存文件记录到数据库
+            如果保存失败则尝试删除物理文件：
+                创建删除文件上下文实体，设置要删除的文件的路径集合，删除
+            如果删除失败则抛出异常，并发布错误日志事件
+     */
     private RPanFile doSaveFile(String filename, String realPath, Long totalSize, String identifier, Long userId) {
         RPanFile record = assembleRPanFile(filename, realPath, totalSize, identifier, userId);
         if (!save(record)) {
@@ -154,6 +162,13 @@ public class FileServiceImpl extends ServiceImpl<RPanFileMapper, RPanFile>
      *
      * @param context
      */
+    /*
+    注意：
+        1. 关于storeFileContext.setInputStream(context.getFile().getInputStream())：
+            storeFileContext中的File属性类型是MultipartFile
+            是org.springframework.web.multipart.MultipartFile;
+            存储的是文件实体，其中MultipartFile对象的getInputStream()方法可以获取文件内容的输入流
+     */
     private void storeMultipartFile(FileSaveContext context) {
         try {
             StoreFileContext storeFileContext = new StoreFileContext();
@@ -167,6 +182,4 @@ public class FileServiceImpl extends ServiceImpl<RPanFileMapper, RPanFile>
             throw new RPanBusinessException("文件上传失败");
         }
     }
-
-
 }

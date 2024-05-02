@@ -182,6 +182,11 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
      *
      * @param context
      */
+    /*
+    注解：
+        1. @Transactional(rollbackFor = Exception.class):
+            这是Spring框架的事务管理注解，表示这个方法需要在一个事务中运行，并且如果发生异常时需要进行回滚操作。
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void upload(FileUploadContext context) {
@@ -202,7 +207,6 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
     /**
      * 上传文件并保存实体文件记录
      * 委托给实体文件的Service去完成该操作
-     *
      *
      * @param context
      */
