@@ -57,6 +57,14 @@ public class FileChunkServiceImpl extends ServiceImpl<RPanFileChunkMapper, RPanF
      *
      * @param context
      */
+    /*
+    执行逻辑：
+        1. 查询r_pan_file_chunk表
+        2. 根据identifier和create_user查询，并计算查询数量
+            注意：同一文件的不同分片，identifier（文件唯一标识）是相同的，create_user也是相同的
+            按照这个两个条件查询出的记录条数 就等于 当前该文件已经上传的总分片数量
+        3. 如果当前该文件已经上传的总分片数量 等于 该文件的所切分的分片总数，则说明全部上传成功了，则将合并flag设为ready，准备合并
+     */
     private void doJudgeMergeFile(FileChunkSaveContext context) {
         QueryWrapper queryWrapper = Wrappers.query();
         queryWrapper.eq("identifier", context.getIdentifier());

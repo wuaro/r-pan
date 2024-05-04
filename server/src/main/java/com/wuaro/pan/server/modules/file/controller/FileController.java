@@ -465,33 +465,9 @@ public class FileController {
     }
 
     /*
-    注解：
-        1. @ApiOperation：
-            这个注解来自于 Swagger API 文档工具，用于描述接口的作用和用法。
-            在这里，接口的作用是查询文件列表，接受的参数是父文件夹ID和文件类型，返回的结果是一个文件列表。
-            value = "文件分片上传"：接口的名称，表示这个接口的作用是单文件分片上传。
-            notes = "该接口提供了单文件上传的功能"：接口的详细说明，描述了这个接口的功能。
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE：
-                表示该接口方法接受的请求内容类型为 multipart/form-data，这种类型通常用于上传文件或表单数据。
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE：
-                表示该接口方法返回的响应内容类型为 application/json，编码格式为 UTF-8。
-                这种类型通常用于返回 JSON 格式的数据给前端。
-        2. @GetMapping("file/chunk-upload")：
-            这个注解表示该接口处理的是 HTTP GET 请求，并且请求的路径是 "file/chunk-upload"。
-        3. @Validated：
-            @Validated 是 Spring 框架中用来进行参数校验的注解。
-            在上下文中，它通常与 Spring MVC 的 @RequestBody 注解一起使用，用于对请求体中的参数进行校验。
-            具体来说，@Validated 可以放在 Controller 方法的参数上，表示对该参数进行校验。
-            在方法参数上使用 @Validated 注解后，Spring 框架会根据对象中的注解（如 @NotNull、@NotBlank、@Min、@Max 等）进行参数校验。
-            在 Spring MVC 中，如果一个类中的字段包含了校验注解（例如 @NotBlank、@NotNull 等），并且该类作为方法的参数，
-            需要进行参数校验，那么该方法的参数 必须使用 @Validated 或 @Valid 注解来标记！！
-            在这里，@Validated 注解用于验证 SecUploadFilePO 对象中的字段是否符合规定的校验条件。
-            注解进行请求参数的验证
-    参数，
-        1. FileChunkUploadPO fileChunkUploadPO
-            文件分片上传的实体类
-    返回值：
-        R<FileChunkUploadVO>
+        返回值：
+            R<FileChunkUploadVO>、
+                文件分片上传的响应实体，里面只有一个参数：是否需要合并文件 0 不需要 1 需要
      */
     @ApiOperation(
             value = "文件分片上传",
@@ -506,6 +482,20 @@ public class FileController {
         return R.data(vo);
     }
 
+    /**
+     * 查询已经上传的文件分片列表
+     *
+     * @param queryUploadedChunksPO
+     * @return
+     */
+    /*
+    注意：
+        1. UploadedChunksVO vo = iUserFileService.getUploadedChunks(context)：
+            调用 iUserFileService 的 getUploadedChunks 方法，传入上一步转换得到的 context 对象，获取已经上传的文件分片列表的数据，并将结果保存在 UploadedChunksVO 类型的对象 vo 中。
+        2. return R.data(vo)：
+            将 vo 对象包装成一个 R 类型的对象，并返回给调用方。
+            返回值vo对象中包含一个列表，列表中包含所有已经上传的分片编号
+     */
     @ApiOperation(
             value = "查询已经上传的文件分片列表",
             notes = "该接口提供了查询已经上传的文件分片列表的功能",
@@ -519,19 +509,19 @@ public class FileController {
         return R.data(vo);
     }
 
-//    @ApiOperation(
-//            value = "文件分片合并",
-//            notes = "该接口提供了文件分片合并的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/merge")
-//    public R mergeFile(@Validated @RequestBody FileChunkMergePO fileChunkMergePO) {
-//        FileChunkMergeContext context = fileConverter.fileChunkMergePO2FileChunkMergeContext(fileChunkMergePO);
-//        iUserFileService.mergeFile(context);
-//        return R.success();
-//    }
-//
+    @ApiOperation(
+            value = "文件分片合并",
+            notes = "该接口提供了文件分片合并的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/merge")
+    public R mergeFile(@Validated @RequestBody FileChunkMergePO fileChunkMergePO) {
+        FileChunkMergeContext context = fileConverter.fileChunkMergePO2FileChunkMergeContext(fileChunkMergePO);
+        iUserFileService.mergeFile(context);
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "文件下载",
 //            notes = "该接口提供了文件下载的功能",

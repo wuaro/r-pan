@@ -1,6 +1,7 @@
 package com.wuaro.pan.storage.engine.core;
 
 import com.wuaro.pan.storage.engine.core.context.DeleteFileContext;
+import com.wuaro.pan.storage.engine.core.context.MergeFileContext;
 import com.wuaro.pan.storage.engine.core.context.StoreFileChunkContext;
 import com.wuaro.pan.storage.engine.core.context.StoreFileContext;
 
@@ -33,4 +34,12 @@ public interface StorageEngine {
      * @throws IOException
      */
     void storeChunk(StoreFileChunkContext context) throws IOException;
+
+    /**
+     * 合并文件分片
+     *
+     * @param context
+     * @throws IOException
+     */
+    void mergeFile(MergeFileContext context) throws IOException;
 }
