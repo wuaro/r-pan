@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.file.service;
 
+import com.wuaro.pan.server.modules.file.context.FileChunkMergeAndSaveContext;
 import com.wuaro.pan.server.modules.file.context.FileSaveContext;
 import com.wuaro.pan.server.modules.file.context.QueryRealFileListContext;
 import com.wuaro.pan.server.modules.file.entity.RPanFile;
@@ -29,4 +30,10 @@ public interface IFileService extends IService<RPanFile> {
      */
     void saveFile(FileSaveContext context);
 
+    /**
+     * 合并物理文件并保存物理文件记录
+     *
+     * @param context
+     */
+    void mergeFileChunkAndSaveFile(FileChunkMergeAndSaveContext context);
 }

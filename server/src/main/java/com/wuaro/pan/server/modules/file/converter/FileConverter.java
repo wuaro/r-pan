@@ -81,11 +81,11 @@ public interface FileConverter {
     @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
     QueryUploadedChunksContext queryUploadedChunksPO2QueryUploadedChunksContext(QueryUploadedChunksPO queryUploadedChunksPO);
 
-//    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
-//    @Mapping(target = "parentId", expression = "java(com.wuaro.pan.core.utils.IdUtil.decrypt(fileChunkMergePO.getParentId()))")
-//    FileChunkMergeContext fileChunkMergePO2FileChunkMergeContext(FileChunkMergePO fileChunkMergePO);
-//
-//    FileChunkMergeAndSaveContext fileChunkMergeContext2FileChunkMergeAndSaveContext(FileChunkMergeContext context);
+    @Mapping(target = "userId", expression = "java(com.wuaro.pan.server.common.utils.UserIdUtil.get())")
+    @Mapping(target = "parentId", expression = "java(com.wuaro.pan.core.utils.IdUtil.decrypt(fileChunkMergePO.getParentId()))")
+    FileChunkMergeContext fileChunkMergePO2FileChunkMergeContext(FileChunkMergePO fileChunkMergePO);
+
+    FileChunkMergeAndSaveContext fileChunkMergeContext2FileChunkMergeAndSaveContext(FileChunkMergeContext context);
 
     @Mapping(target = "label", source = "record.filename")
     @Mapping(target = "id", source = "record.fileId")

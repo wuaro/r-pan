@@ -84,4 +84,11 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @return
      */
     UploadedChunksVO getUploadedChunks(QueryUploadedChunksContext context);
+
+    /**
+     * 文件分片合并
+     *
+     * @param context
+     */
+    void mergeFile(FileChunkMergeContext context);
 }
