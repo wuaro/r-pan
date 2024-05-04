@@ -6,12 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "com.imooc.pan.server")
+@ConfigurationProperties(prefix = "com.wuaro.pan.server")
 @Data
 public class PanServerConfig {
 
     /**
-     * 文件分片的过期天数
+     * 文件分片的过期天数(一天)
      */
     private Integer chunkFileExpirationDays = RPanConstants.ONE_INT;
 

@@ -13,6 +13,7 @@ import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 //import com.wuaro.pan.server.modules.file.enums.MergeFlagEnum;
 //import com.wuaro.pan.server.modules.file.service.IFileChunkService;
 //import com.wuaro.pan.server.modules.file.service.IFileService;
+import com.wuaro.pan.server.modules.file.service.IFileChunkService;
 import com.wuaro.pan.server.modules.file.service.IFileService;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.vo.*;
@@ -50,6 +51,9 @@ public class FileTest {
 
     @Autowired
     private IFileService iFileService;
+
+    @Autowired
+    private IFileChunkService iFileChunkService;
 
     /**
      * 测试用户查询文件列表成功
@@ -378,6 +382,35 @@ public class FileTest {
         List<RPanUserFileVO> fileList = iUserFileService.getFileList(queryFileListContext);
         Assert.notEmpty(fileList);
         Assert.isTrue(fileList.size() == 1);
+    }
+
+    /**
+     * 测试查询用户已上传的文件分片信息列表成功
+     */
+    @Test
+    public void testQueryUploadedChunksSuccess() {
+        Long userId = register();
+
+        String identifier = "123456789";
+
+        RPanFileChunk record = new RPanFileChunk();
+        record.setId(IdUtil.get());
+        record.setIdentifier(identifier);
+        record.setRealPath("realPath");
+        record.setChunkNumber(1);
+        record.setExpirationTime(DateUtil.offsetDay(new Date(), 1));
+        record.setCreateUser(userId);
+        record.setCreateTime(new Date());
+        boolean save = iFileChunkService.save(record);
+        Assert.isTrue(save);
+
+        QueryUploadedChunksContext context = new QueryUploadedChunksContext();
+        context.setIdentifier(identifier);
+        context.setUserId(userId);
+
+        UploadedChunksVO vo = iUserFileService.getUploadedChunks(context);
+        Assert.notNull(vo);
+        Assert.notEmpty(vo.getUploadedChunks());
     }
 
     /************************************************private************************************************/

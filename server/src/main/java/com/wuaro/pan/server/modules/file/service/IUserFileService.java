@@ -5,6 +5,7 @@ import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
+import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
 
 import java.util.List;
 
@@ -75,4 +76,12 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @return
      */
     FileChunkUploadVO chunkUpload(FileChunkUploadContext context);
+
+    /**
+     * 查询用户已上传的分片列表
+     *
+     * @param context
+     * @return
+     */
+    UploadedChunksVO getUploadedChunks(QueryUploadedChunksContext context);
 }
