@@ -17,6 +17,7 @@ import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
+import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 //import org.apache.commons.lang3.StringUtils;
@@ -505,19 +506,19 @@ public class FileController {
         return R.data(vo);
     }
 
-//    @ApiOperation(
-//            value = "查询已经上传的文件分片列表",
-//            notes = "该接口提供了查询已经上传的文件分片列表的功能",
-//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @GetMapping("file/chunk-upload")
-//    public R<UploadedChunksVO> getUploadedChunks(@Validated QueryUploadedChunksPO queryUploadedChunksPO) {
-//        QueryUploadedChunksContext context = fileConverter.queryUploadedChunksPO2QueryUploadedChunksContext(queryUploadedChunksPO);
-//        UploadedChunksVO vo = iUserFileService.getUploadedChunks(context);
-//        return R.data(vo);
-//    }
-//
+    @ApiOperation(
+            value = "查询已经上传的文件分片列表",
+            notes = "该接口提供了查询已经上传的文件分片列表的功能",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @GetMapping("file/chunk-upload")
+    public R<UploadedChunksVO> getUploadedChunks(@Validated QueryUploadedChunksPO queryUploadedChunksPO) {
+        QueryUploadedChunksContext context = fileConverter.queryUploadedChunksPO2QueryUploadedChunksContext(queryUploadedChunksPO);
+        UploadedChunksVO vo = iUserFileService.getUploadedChunks(context);
+        return R.data(vo);
+    }
+
 //    @ApiOperation(
 //            value = "文件分片合并",
 //            notes = "该接口提供了文件分片合并的功能",
