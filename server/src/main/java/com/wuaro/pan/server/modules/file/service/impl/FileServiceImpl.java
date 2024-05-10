@@ -133,6 +133,34 @@ public class FileServiceImpl extends ServiceImpl<RPanFileMapper, RPanFile>
      *
      * @param context
      */
+    /*
+    代码解释：
+        1. List<String> realPathList = chunkRecoredList.stream()
+                .sorted(Comparator.comparing(RPanFileChunk::getChunkNumber))
+                .map(RPanFileChunk::getRealPath)
+                .collect(Collectors.toList());
+       解释：
+            .stream(): 将 chunkRecoredList 转换为流，以便进行流式操作。
+            .sorted(Comparator.comparing(RPanFileChunk::getChunkNumber)):
+                使用 Comparator.comparing 方法基于 chunkNumber 属性创建一个比较器，并将流中的元素按照 chunkNumber 属性进行排序。
+            .map(RPanFileChunk::getRealPath):
+                使用 map 方法将流中的每个 RPanFileChunk 对象映射为其对应的 realPath 属性，从而得到一个包含所有 realPath 字符串的流。
+            .collect(Collectors.toList()):
+                使用 collect 方法将流中的元素收集到一个列表中，最终得到一个 List<String> 类型的 realPathList 列表，
+                其中包含了排序后的 RPanFileChunk 对象的 realPath 属性字符串。
+            总之，这行代码的作用是对文件分片记录列表进行排序，并提取每个记录的实际路径，将这些路径字符串存储在 realPathList 列表中。
+        2. 关于RPanFileChunk::getChunkNumber的补充解释：
+            RPanFileChunk::getChunkNumber 是一个方法引用，它指向 RPanFileChunk 类中的 getChunkNumber 方法。
+            在 Java 中，方法引用可以用来直接引用已有方法或构造方法，而不需要像 lambda 表达式那样提供方法体。方法引用通常用于函数式接口的实现，可以简化代码并提高可读性。
+            具体到这个方法引用 RPanFileChunk::getChunkNumber，它的作用是引用 RPanFileChunk 类中的 getChunkNumber 方法，而不是调用该方法。在上下文中，
+            这个方法引用被用作比较器，用来对 RPanFileChunk 对象进行排序。
+            例如，如果有一个 List<RPanFileChunk> 类型的列表 chunkRecoredList，你可以使用方法引用来排序这个列表，如下所示：
+                List<RPanFileChunk> sortedList = chunkRecoredList.stream()
+                    .sorted(Comparator.comparing(RPanFileChunk::getChunkNumber))
+                    .collect(Collectors.toList());
+                在这段代码中，Comparator.comparing(RPanFileChunk::getChunkNumber) 就是一个比较器，
+                它告诉 sorted 方法按照 RPanFileChunk 对象的 chunkNumber 属性进行排序。
+     */
     private void doMergeFileChunk(FileChunkMergeAndSaveContext context) {
         QueryWrapper<RPanFileChunk> queryWrapper = Wrappers.query();
         queryWrapper.eq("identifier", context.getIdentifier());
