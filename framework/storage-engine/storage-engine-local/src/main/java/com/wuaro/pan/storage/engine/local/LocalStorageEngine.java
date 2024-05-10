@@ -2,10 +2,7 @@ package com.wuaro.pan.storage.engine.local;
 
 import com.wuaro.pan.core.utils.FileUtils;
 import com.wuaro.pan.storage.engine.core.AbstractStorageEngine;
-import com.wuaro.pan.storage.engine.core.context.DeleteFileContext;
-import com.wuaro.pan.storage.engine.core.context.MergeFileContext;
-import com.wuaro.pan.storage.engine.core.context.StoreFileChunkContext;
-import com.wuaro.pan.storage.engine.core.context.StoreFileContext;
+import com.wuaro.pan.storage.engine.core.context.*;
 import com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -76,6 +73,13 @@ public class LocalStorageEngine extends AbstractStorageEngine {
      *
      * @param context
      */
+    /*
+    执行原理：
+        1. 创建一个空文件
+        2. 将每个分片按照顺序逐个“追加写”进空文件
+        3. 写完之后删除所有分片文件
+        4. 将合并后的完整文件的物理地址设置到MergeFileContext中
+     */
     @Override
     protected void doMergeFile(MergeFileContext context) throws IOException {
         String basePath = config.getRootFilePath();
@@ -87,5 +91,17 @@ public class LocalStorageEngine extends AbstractStorageEngine {
         }
         FileUtils.deleteFiles(chunkPaths);
         context.setRealPath(realFilePath);
+    }
+
+    /**
+     * 读取文件内容并写入到输出流中
+     * 下沉到子类去实现
+     *
+     * @param context
+     */
+    @Override
+    protected void doReadFile(ReadFileContext context) throws IOException {
+        File file = new File(context.getRealPath());
+        FileUtils.writeFile2OutputStream(new FileInputStream(file), context.getOutputStream(), file.length());
     }
 }
