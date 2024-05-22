@@ -3,9 +3,7 @@ package com.wuaro.pan.server.modules.file.service;
 import com.wuaro.pan.server.modules.file.context.*;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
-import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
-import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
+import com.wuaro.pan.server.modules.file.vo.*;
 
 import java.util.List;
 
@@ -106,4 +104,68 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @param context
      */
     void preview(FilePreviewContext context);
+
+    /**
+     * 查询用户的文件夹树
+     *
+     * @param context
+     * @return
+     */
+    List<FolderTreeNodeVO> getFolderTree(QueryFolderTreeContext context);
+
+    /**
+     * 文件转移
+     *
+     * @param context
+     */
+    void transfer(TransferFileContext context);
+
+    /**
+     * 文件复制
+     *
+     * @param context
+     */
+    void copy(CopyFileContext context);
+
+//    /**
+//     * 文件列表搜索
+//     *
+//     * @param context
+//     * @return
+//     */
+//    List<FileSearchResultVO> search(FileSearchContext context);
+//
+//    /**
+//     * 获取面包屑列表
+//     *
+//     * @param context
+//     * @return
+//     */
+//    List<BreadcrumbVO> getBreadcrumbs(QueryBreadcrumbsContext context);
+//
+//    /**
+//     * 递归查询所有的子文件信息
+//     *
+//     * @param records
+//     * @return
+//     */
+    List<RPanUserFile> findAllFileRecords(List<RPanUserFile> records);
+
+    /**
+     * 递归查询所有的子文件信息
+     *
+     * @param fileIdList
+     * @return
+     */
+    List<RPanUserFile> findAllFileRecordsByFileIdList(List<Long> fileIdList);
+
+    /**
+     * 实体转换
+     *
+     * @param records
+     * @return
+     */
+    List<RPanUserFileVO> transferVOList(List<RPanUserFile> records);
+
+
 }
