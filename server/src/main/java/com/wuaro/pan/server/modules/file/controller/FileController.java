@@ -16,6 +16,7 @@ import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
+import com.wuaro.pan.server.modules.file.vo.FolderTreeNodeVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
 import io.swagger.annotations.Api;
@@ -510,6 +511,13 @@ public class FileController {
         return R.data(vo);
     }
 
+
+    /**
+     * 文件分片合并
+     *
+     * @param fileChunkMergePO
+     * @return
+     */
     @ApiOperation(
             value = "文件分片合并",
             notes = "该接口提供了文件分片合并的功能",
@@ -523,6 +531,12 @@ public class FileController {
         return R.success();
     }
 
+    /**
+     * 文件下载
+     *
+     * @param fileId
+     * @param response
+     */
     @ApiOperation(
             value = "文件下载",
             notes = "该接口提供了文件下载的功能",
@@ -539,6 +553,13 @@ public class FileController {
         iUserFileService.download(context);
     }
 
+
+    /**
+     * 文件预览
+     *
+     * @param fileId
+     * @param response
+     */
     @ApiOperation(
             value = "文件预览",
             notes = "该接口提供了文件预览的功能",
@@ -555,58 +576,75 @@ public class FileController {
         iUserFileService.preview(context);
     }
 
-//    @ApiOperation(
-//            value = "查询文件夹树",
-//            notes = "该接口提供了查询文件夹树的功能",
-//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @GetMapping("file/folder/tree")
-//    public R<List<FolderTreeNodeVO>> getFolderTree() {
-//        QueryFolderTreeContext context = new QueryFolderTreeContext();
-//        context.setUserId(UserIdUtil.get());
-//        List<FolderTreeNodeVO> result = iUserFileService.getFolderTree(context);
-//        return R.data(result);
-//    }
-//
-//    @ApiOperation(
-//            value = "文件转移",
-//            notes = "该接口提供了文件转移的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/transfer")
-//    public R transfer(@Validated @RequestBody TransferFilePO transferFilePO) {
-//        String fileIds = transferFilePO.getFileIds();
-//        String targetParentId = transferFilePO.getTargetParentId();
-//        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileIds).stream().map(IdUtil::decrypt).collect(Collectors.toList());
-//        TransferFileContext context = new TransferFileContext();
-//        context.setFileIdList(fileIdList);
-//        context.setTargetParentId(IdUtil.decrypt(targetParentId));
-//        context.setUserId(UserIdUtil.get());
-//        iUserFileService.transfer(context);
-//        return R.success();
-//    }
-//
-//    @ApiOperation(
-//            value = "文件复制",
-//            notes = "该接口提供了文件复制的功能",
-//            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @PostMapping("file/copy")
-//    public R copy(@Validated @RequestBody CopyFilePO copyFilePO) {
-//        String fileIds = copyFilePO.getFileIds();
-//        String targetParentId = copyFilePO.getTargetParentId();
-//        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileIds).stream().map(IdUtil::decrypt).collect(Collectors.toList());
-//        CopyFileContext context = new CopyFileContext();
-//        context.setFileIdList(fileIdList);
-//        context.setTargetParentId(IdUtil.decrypt(targetParentId));
-//        context.setUserId(UserIdUtil.get());
-//        iUserFileService.copy(context);
-//        return R.success();
-//    }
-//
+    /**
+     * 查询文件夹树
+     *
+     * @return
+     */
+    @ApiOperation(
+            value = "查询文件夹树",
+            notes = "该接口提供了查询文件夹树的功能",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @GetMapping("file/folder/tree")
+    public R<List<FolderTreeNodeVO>> getFolderTree() {
+        QueryFolderTreeContext context = new QueryFolderTreeContext();
+        context.setUserId(UserIdUtil.get());
+        List<FolderTreeNodeVO> result = iUserFileService.getFolderTree(context);
+        return R.data(result);
+    }
+
+
+    /**
+     * 文件转移
+     *
+     * @param transferFilePO
+     * @return
+     */
+    /*
+    注意：
+        1. TransferFilePO中的“要转移的文件ID集合”是以String形式保存的，各个文件ID之间通过特殊分隔符来分割
+            在本方法中，我们需要将其转换成List形式来存储
+     */
+    @ApiOperation(
+            value = "文件转移",
+            notes = "该接口提供了文件转移的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/transfer")
+    public R transfer(@Validated @RequestBody TransferFilePO transferFilePO) {
+        String fileIds = transferFilePO.getFileIds();
+        String targetParentId = transferFilePO.getTargetParentId();
+        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileIds).stream().map(IdUtil::decrypt).collect(Collectors.toList());
+        TransferFileContext context = new TransferFileContext();
+        context.setFileIdList(fileIdList);
+        context.setTargetParentId(IdUtil.decrypt(targetParentId));
+        context.setUserId(UserIdUtil.get());
+        iUserFileService.transfer(context);
+        return R.success();
+    }
+
+    @ApiOperation(
+            value = "文件复制",
+            notes = "该接口提供了文件复制的功能",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @PostMapping("file/copy")
+    public R copy(@Validated @RequestBody CopyFilePO copyFilePO) {
+        String fileIds = copyFilePO.getFileIds();
+        String targetParentId = copyFilePO.getTargetParentId();
+        List<Long> fileIdList = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileIds).stream().map(IdUtil::decrypt).collect(Collectors.toList());
+        CopyFileContext context = new CopyFileContext();
+        context.setFileIdList(fileIdList);
+        context.setTargetParentId(IdUtil.decrypt(targetParentId));
+        context.setUserId(UserIdUtil.get());
+        iUserFileService.copy(context);
+        return R.success();
+    }
+
 //    @ApiOperation(
 //            value = "文件搜索",
 //            notes = "该接口提供了文件搜索的功能",

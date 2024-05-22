@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.file.service.impl;
 
+import com.google.common.collect.Lists;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wuaro.pan.core.constants.RPanConstants;
@@ -19,13 +20,12 @@ import com.wuaro.pan.server.modules.file.enums.FolderFlagEnum;
 import com.wuaro.pan.server.modules.file.service.IFileService;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 import com.wuaro.pan.server.modules.file.mapper.RPanUserFileMapper;
-import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
-import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
-import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
+import com.wuaro.pan.server.modules.file.vo.*;
 import com.wuaro.pan.storage.engine.core.AbstractStorageEngine;
 import com.wuaro.pan.storage.engine.core.context.ReadFileContext;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
@@ -60,7 +60,6 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     @Autowired
     private IFileService iFileService;
-
 
     private ApplicationContext applicationContext;
 
@@ -282,7 +281,7 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
 
     /**
      * 文件下载
-     * <p>
+     *
      * 1、参数校验：校验文件是否存在，文件是否属于该用户
      * 2、校验该文件是不是一个文件夹
      * 3、执行下载的动作
@@ -317,8 +316,450 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         doPreview(record, context.getResponse());
     }
 
+    /**
+     * 查询用户的文件夹树
+     *
+     * 1、查询出该用户的所有文件夹列表
+     * 2、在内存中拼装文件夹树
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public List<FolderTreeNodeVO> getFolderTree(QueryFolderTreeContext context) {
+        List<RPanUserFile> folderRecords = queryFolderRecords(context.getUserId());
+        List<FolderTreeNodeVO> result = assembleFolderTreeNodeVOList(folderRecords);
+        return result;
+    }
+
+    /**
+     * 文件转移
+     *
+     * 1、权限校验
+     * 2、执行工作
+     *
+     * @param context
+     */
+    @Override
+    public void transfer(TransferFileContext context) {
+        checkTransferCondition(context);
+        doTransfer(context);
+    }
+
+    /**
+     * 文件复制
+     * <p>
+     * 1、条件校验
+     * 2、执行动作
+     *
+     * @param context
+     */
+    @Override
+    public void copy(CopyFileContext context) {
+        checkCopyCondition(context);
+        doCopy(context);
+    }
+
+//    /**
+//     * 文件列表搜索
+//     * <p>
+//     * 1、执行文件搜索
+//     * 2、拼装文件的父文件夹名称
+//     * 3、执行文件搜索后的后置动作
+//     *
+//     * @param context
+//     * @return
+//     */
+//    @Override
+//    public List<FileSearchResultVO> search(FileSearchContext context) {
+//        List<FileSearchResultVO> result = doSearch(context);
+//        fillParentFilename(result);
+//        afterSearch(context);
+//        return result;
+//    }
+
+//    /**
+//     * 获取面包屑列表
+//     * <p>
+//     * 1、获取用户所有文件夹信息
+//     * 2、拼接需要用到的面包屑的列表
+//     *
+//     * @param context
+//     * @return
+//     */
+//    @Override
+//    public List<BreadcrumbVO> getBreadcrumbs(QueryBreadcrumbsContext context) {
+//        List<RPanUserFile> folderRecords = queryFolderRecords(context.getUserId());
+//        Map<Long, BreadcrumbVO> prepareBreadcrumbVOMap = folderRecords.stream().map(BreadcrumbVO::transfer).collect(Collectors.toMap(BreadcrumbVO::getId, a -> a));
+//        BreadcrumbVO currentNode;
+//        Long fileId = context.getFileId();
+//        List<BreadcrumbVO> result = Lists.newLinkedList();
+//        do {
+//            currentNode = prepareBreadcrumbVOMap.get(fileId);
+//            if (Objects.nonNull(currentNode)) {
+//                result.add(0, currentNode);
+//                fileId = currentNode.getParentId();
+//            }
+//        } while (Objects.nonNull(currentNode));
+//        return result;
+//    }
+
+    /**
+     * 递归查询所有的子文件信息
+     *
+     * @param records
+     * @return
+     */
+    @Override
+    public List<RPanUserFile> findAllFileRecords(List<RPanUserFile> records) {
+        List<RPanUserFile> result = Lists.newArrayList(records);
+        if (CollectionUtils.isEmpty(result)) {
+            return result;
+        }
+        long folderCount = result.stream().filter(record -> Objects.equals(record.getFolderFlag(), FolderFlagEnum.YES.getCode())).count();
+        if (folderCount == 0) {
+            return result;
+        }
+        records.stream().forEach(record -> doFindAllChildRecords(result, record));
+        return result;
+    }
+
+    /**
+     * 递归查询所有的子文件信息
+     *
+     * @param fileIdList
+     * @return
+     */
+    @Override
+    public List<RPanUserFile> findAllFileRecordsByFileIdList(List<Long> fileIdList) {
+        if (CollectionUtils.isEmpty(fileIdList)) {
+            return Lists.newArrayList();
+        }
+        List<RPanUserFile> records = listByIds(fileIdList);
+        if (CollectionUtils.isEmpty(records)) {
+            return Lists.newArrayList();
+        }
+        return findAllFileRecords(records);
+    }
+
+    /**
+     * 实体转换
+     *
+     * @param records
+     * @return
+     */
+    @Override
+    public List<RPanUserFileVO> transferVOList(List<RPanUserFile> records) {
+        if (CollectionUtils.isEmpty(records)) {
+            return Lists.newArrayList();
+        }
+        return records.stream().map(fileConverter::rPanUserFile2RPanUserFileVO).collect(Collectors.toList());
+    }
 
     /************************************************private************************************************/
+
+
+    /**
+     * 递归查询所有的子文件列表
+     * 忽略是否删除的标识
+     *
+     * @param result
+     * @param record
+     */
+    private void doFindAllChildRecords(List<RPanUserFile> result, RPanUserFile record) {
+        if (Objects.isNull(record)) {
+            return;
+        }
+        if (!checkIsFolder(record)) {
+            return;
+        }
+        List<RPanUserFile> childRecords = findChildRecordsIgnoreDelFlag(record.getFileId());
+        if (CollectionUtils.isEmpty(childRecords)) {
+            return;
+        }
+        result.addAll(childRecords);
+        childRecords.stream()
+                .filter(childRecord -> FolderFlagEnum.YES.getCode().equals(childRecord.getFolderFlag()))
+                .forEach(childRecord -> doFindAllChildRecords(result, childRecord));
+    }
+
+    /**
+     * 查询文件夹下面的文件记录，忽略删除标识
+     *
+     * @param fileId
+     * @return
+     */
+    private List<RPanUserFile> findChildRecordsIgnoreDelFlag(Long fileId) {
+        QueryWrapper queryWrapper = Wrappers.query();
+        queryWrapper.eq("parent_id", fileId);
+        List<RPanUserFile> childRecords = list(queryWrapper);
+        return childRecords;
+    }
+//
+//    /**
+//     * 搜索的后置操作
+//     * <p>
+//     * 1、发布文件搜索的事件
+//     *
+//     * @param context
+//     */
+//    private void afterSearch(FileSearchContext context) {
+//        UserSearchEvent event = new UserSearchEvent(context.getKeyword(), context.getUserId());
+//        producer.sendMessage(PanChannels.USER_SEARCH_OUTPUT, event);
+//    }
+
+    /**
+     * 填充文件列表的父文件名称
+     *
+     * @param result
+     */
+    private void fillParentFilename(List<FileSearchResultVO> result) {
+        if (CollectionUtils.isEmpty(result)) {
+            return;
+        }
+        List<Long> parentIdList = result.stream().map(FileSearchResultVO::getParentId).collect(Collectors.toList());
+        List<RPanUserFile> parentRecords = listByIds(parentIdList);
+        Map<Long, String> fileId2filenameMap = parentRecords.stream().collect(Collectors.toMap(RPanUserFile::getFileId, RPanUserFile::getFilename));
+        result.stream().forEach(vo -> vo.setParentFilename(fileId2filenameMap.get(vo.getParentId())));
+    }
+
+//    /**
+//     * 搜索文件列表
+//     *
+//     * @param context
+//     * @return
+//     */
+//    private List<FileSearchResultVO> doSearch(FileSearchContext context) {
+//        return baseMapper.searchFile(context);
+//    }
+
+    /**
+     * 执行文件复制的动作
+     *
+     * @param context
+     */
+    private void doCopy(CopyFileContext context) {
+        List<RPanUserFile> prepareRecords = context.getPrepareRecords();
+        if (CollectionUtils.isNotEmpty(prepareRecords)) {
+            List<RPanUserFile> allRecords = Lists.newArrayList();
+            prepareRecords.stream().forEach(record -> assembleCopyChildRecord(allRecords, record, context.getTargetParentId(), context.getUserId()));
+            if (!saveBatch(allRecords)) {
+                throw new RPanBusinessException("文件复制失败");
+            }
+        }
+    }
+
+    /**
+     * 拼装当前文件记录以及所有的子文件记录
+     *
+     * @param allRecords
+     * @param record
+     * @param targetParentId
+     * @param userId
+     */
+    private void assembleCopyChildRecord(List<RPanUserFile> allRecords, RPanUserFile record, Long targetParentId, Long userId) {
+        Long newFileId = IdUtil.get();
+        Long oldFileId = record.getFileId();
+
+        record.setParentId(targetParentId);
+        record.setFileId(newFileId);
+        record.setUserId(userId);
+        record.setCreateUser(userId);
+        record.setCreateTime(new Date());
+        record.setUpdateUser(userId);
+        record.setUpdateTime(new Date());
+        handleDuplicateFilename(record);
+
+        allRecords.add(record);
+
+        if (checkIsFolder(record)) {
+            List<RPanUserFile> childRecords = findChildRecords(oldFileId);
+            if (CollectionUtils.isEmpty(childRecords)) {
+                return;
+            }
+            childRecords.stream().forEach(childRecord -> assembleCopyChildRecord(allRecords, childRecord, newFileId, userId));
+        }
+
+    }
+
+    /**
+     * 查找下一级的文件记录
+     *
+     * @param parentId
+     * @return
+     */
+    private List<RPanUserFile> findChildRecords(Long parentId) {
+        QueryWrapper queryWrapper = Wrappers.query();
+        queryWrapper.eq("parent_id", parentId);
+        queryWrapper.eq("del_flag", DelFlagEnum.NO.getCode());
+        return list(queryWrapper);
+    }
+
+    /**
+     * 文件复制的条件校验
+     *
+     * 1、目标文件必须是一个文件夹
+     * 2、选中的要转移的文件列表中不能含有目标文件夹以及其子文件夹
+     *
+     * @param context
+     */
+    private void checkCopyCondition(CopyFileContext context) {
+        Long targetParentId = context.getTargetParentId();
+        if (!checkIsFolder(getById(targetParentId))) {
+            throw new RPanBusinessException("目标文件不是一个文件夹");
+        }
+        List<Long> fileIdList = context.getFileIdList();
+        List<RPanUserFile> prepareRecords = listByIds(fileIdList);
+        context.setPrepareRecords(prepareRecords);
+        if (checkIsChildFolder(prepareRecords, targetParentId, context.getUserId())) {
+            throw new RPanBusinessException("目标文件夹ID不能是选中文件列表的文件夹ID或其子文件夹ID");
+        }
+    }
+
+    /**
+     * 执行文件转移的动作
+     *
+     * @param context
+     */
+    private void doTransfer(TransferFileContext context) {
+        List<RPanUserFile> prepareRecords = context.getPrepareRecords();
+        prepareRecords.stream().forEach(record -> {
+            record.setParentId(context.getTargetParentId());
+            record.setUserId(context.getUserId());
+            record.setCreateUser(context.getUserId());
+            record.setCreateTime(new Date());
+            record.setUpdateUser(context.getUserId());
+            record.setUpdateTime(new Date());
+            handleDuplicateFilename(record);
+        });
+        if (!updateBatchById(prepareRecords)) {
+            throw new RPanBusinessException("文件转移失败");
+        }
+    }
+
+    /**
+     * 文件转移的条件校验：
+     * 1、目标文件必须是一个文件夹（毕竟不可能把一堆文件转移到一个文件中去吧，肯定是转移到某个文件夹中）
+     * 2、选中的要转移的文件列表中不能含有目标文件夹以及其子文件夹
+     *      比如A文件夹里有B文件夹，那么我们不能将A转移到B中（否则会循环嵌套）
+     *
+     * @param context
+     */
+    /*
+    注意：
+        List<RPanUserFile> prepareRecords = listByIds(fileIdList);
+            根据待转移文件的ID列表查询数据库，获取待转移的文件记录列表。
+     */
+    private void checkTransferCondition(TransferFileContext context) {
+        Long targetParentId = context.getTargetParentId();
+        if (!checkIsFolder(getById(targetParentId))) {
+            throw new RPanBusinessException("目标文件不是一个文件夹");
+        }
+        List<Long> fileIdList = context.getFileIdList();
+        List<RPanUserFile> prepareRecords = listByIds(fileIdList);
+        context.setPrepareRecords(prepareRecords);
+        if (checkIsChildFolder(prepareRecords, targetParentId, context.getUserId())) {
+            throw new RPanBusinessException("目标文件夹ID不能是选中文件列表的文件夹ID或其子文件夹ID");
+        }
+    }
+
+    /**
+     * 校验目标文件夹ID是都是要操作的文件记录的文件夹ID以及其子文件夹ID
+     *
+     * 1、如果要操作的文件列表中没有文件夹，那就直接返回false
+     * 2、拼装文件夹ID以及所有子文件夹ID，判断存在即可
+     *
+     * @param prepareRecords
+     * @param targetParentId
+     * @param userId
+     * @return
+     */
+    private boolean checkIsChildFolder(List<RPanUserFile> prepareRecords, Long targetParentId, Long userId) {
+        prepareRecords = prepareRecords.stream().filter(record -> Objects.equals(record.getFolderFlag(), FolderFlagEnum.YES.getCode())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(prepareRecords)) {
+            return false;
+        }
+        List<RPanUserFile> folderRecords = queryFolderRecords(userId);
+        Map<Long, List<RPanUserFile>> folderRecordMap = folderRecords.stream().collect(Collectors.groupingBy(RPanUserFile::getParentId));
+        List<RPanUserFile> unavailableFolderRecords = Lists.newArrayList();
+        unavailableFolderRecords.addAll(prepareRecords);
+        prepareRecords.stream().forEach(record -> findAllChildFolderRecords(unavailableFolderRecords, folderRecordMap, record));
+        List<Long> unavailableFolderRecordIds = unavailableFolderRecords.stream().map(RPanUserFile::getFileId).collect(Collectors.toList());
+        return unavailableFolderRecordIds.contains(targetParentId);
+    }
+
+    /**
+     * 查找文件夹的所有子文件夹记录
+     *
+     * @param unavailableFolderRecords
+     * @param folderRecordMap
+     * @param record
+     */
+    private void findAllChildFolderRecords(List<RPanUserFile> unavailableFolderRecords, Map<Long, List<RPanUserFile>> folderRecordMap, RPanUserFile record) {
+        if (Objects.isNull(record)) {
+            return;
+        }
+        List<RPanUserFile> childFolderRecords = folderRecordMap.get(record.getFileId());
+        if (CollectionUtils.isEmpty(childFolderRecords)) {
+            return;
+        }
+        unavailableFolderRecords.addAll(childFolderRecords);
+        childFolderRecords.stream().forEach(childRecord -> findAllChildFolderRecords(unavailableFolderRecords, folderRecordMap, childRecord));
+    }
+
+    /**
+     * 拼装文件夹树列表
+     *
+     * @param folderRecords
+     * @return
+     */
+    /*
+    执行逻辑：
+        if (CollectionUtils.isEmpty(folderRecords)) { return Lists.newArrayList(); }
+            如果传入的文件夹记录列表是空的，则直接返回一个空的列表。
+        List<FolderTreeNodeVO> mappedFolderTreeNodeVOList = folderRecords.stream().map(fileConverter::rPanUserFile2FolderTreeNodeVO).collect(Collectors.toList());
+            将传入的文件夹记录列表转换为文件夹树节点（FolderTreeNodeVO）列表。这里使用了 map 方法将每个文件夹记录转换为对应的文件夹树节点。
+        Map<Long, List<FolderTreeNodeVO>> mappedFolderTreeNodeVOMap = mappedFolderTreeNodeVOList.stream().collect(Collectors.groupingBy(FolderTreeNodeVO::getParentId));
+            将文件夹树节点列表按照父节点ID进行分组，得到一个以父节点ID为键，对应子节点列表为值的映射。
+        for (FolderTreeNodeVO node : mappedFolderTreeNodeVOList) {
+            List<FolderTreeNodeVO> children = mappedFolderTreeNodeVOMap.get(node.getId());
+            if (CollectionUtils.isNotEmpty(children)) {
+                node.getChildren().addAll(children);
+            }
+        }
+           遍历文件夹树节点列表，对于每个节点，从映射中获取其子节点列表，并将子节点添加到该节点的子节点列表中。
+        return mappedFolderTreeNodeVOList.stream().filter(node -> Objects.equals(node.getParentId(), FileConstants.TOP_PARENT_ID)).collect(Collectors.toList());
+            最后，将经过处理的文件夹树节点列表进行筛选，只保留顶层节点（即父节点ID为顶层父节点ID的节点），并返回这个顶层节点列表。
+        总体来说，这个方法的作用是将文件夹记录列表转换为文件夹树节点列表，并组装成一个树形结构，其中每个节点包含其对应的子节点列表。最后返回的是顶层节点列表，即树的根节点列表。
+     */
+    private List<FolderTreeNodeVO> assembleFolderTreeNodeVOList(List<RPanUserFile> folderRecords) {
+        if (CollectionUtils.isEmpty(folderRecords)) {
+            return Lists.newArrayList();
+        }
+        List<FolderTreeNodeVO> mappedFolderTreeNodeVOList = folderRecords.stream().map(fileConverter::rPanUserFile2FolderTreeNodeVO).collect(Collectors.toList());
+        Map<Long, List<FolderTreeNodeVO>> mappedFolderTreeNodeVOMap = mappedFolderTreeNodeVOList.stream().collect(Collectors.groupingBy(FolderTreeNodeVO::getParentId));
+        for (FolderTreeNodeVO node : mappedFolderTreeNodeVOList) {
+            List<FolderTreeNodeVO> children = mappedFolderTreeNodeVOMap.get(node.getId());
+            if (CollectionUtils.isNotEmpty(children)) {
+                node.getChildren().addAll(children);
+            }
+        }
+        return mappedFolderTreeNodeVOList.stream().filter(node -> Objects.equals(node.getParentId(), FileConstants.TOP_PARENT_ID)).collect(Collectors.toList());
+    }
+
+    /**
+     * 查询用户所有有效的文件夹信息
+     *
+     * @param userId
+     * @return
+     */
+    private List<RPanUserFile> queryFolderRecords(Long userId) {
+        QueryWrapper queryWrapper = Wrappers.query();
+        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("folder_flag", FolderFlagEnum.YES.getCode());
+        queryWrapper.eq("del_flag", DelFlagEnum.NO.getCode());
+        return list(queryWrapper);
+    }
 
     /**
      * 执行文件预览的动作
@@ -392,6 +833,18 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
      * @param record
      * @param realFileRecord
      */
+    /*
+    注意：
+        response.addHeader(FileConstants.CONTENT_DISPOSITION_STR,
+                    FileConstants.CONTENT_DISPOSITION_VALUE_PREFIX_STR + new String(record.getFilename().getBytes(FileConstants.GB2312_STR),
+                    FileConstants.IOS_8859_1_STR));
+            这行代码添加了一个 HTTP 响应头，其中包含了文件下载属性。
+            具体地说，它设置了 Content-Disposition 头，值为 "attachment; filename=..."，
+            这个值告诉浏览器下载文件而不是直接打开，并指定了下载文件的文件名。这里使用了 GB2312 编码来处理文件名。
+        response.setContentLengthLong(Long.valueOf(realFileRecord.getFileSize()));
+            这行代码设置了 HTTP 响应的内容长度，即下载文件的大小。它通过 realFileRecord.getFileSize() 获取文件大小，并将其设置为响应的内容长度。
+        综合起来，这个方法的作用是设置 HTTP 响应的下载属性，包括指定下载文件的文件名和文件大小，以便客户端下载文件时能够正确显示这些信息。
+     */
     private void addDownloadAttribute(HttpServletResponse response, RPanUserFile record, RPanFile realFileRecord) {
         try {
             response.addHeader(FileConstants.CONTENT_DISPOSITION_STR,
@@ -404,10 +857,29 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
     }
 
     /**
+     *
      * 添加公共的文件读取响应头
      *
      * @param response
      * @param contentTypeValue
+     */
+    /*
+    作用：
+        这个 addCommonResponseHeader 方法用于向响应对象添加常见的 HTTP 头，特别是在处理文件下载或其他 HTTP 响应时使用。
+    执行逻辑：
+        response.reset();
+            这行代码重置了响应。它会清除之前设置在响应中的任何数据。通常用于确保在添加新的头或内容之前处于干净的状态。
+        HttpUtil.addCorsResponseHeaders(response);
+            这行代码向响应添加了跨源资源共享（CORS）头。CORS 头用于控制来自不同来源（域）的资源的访问。
+            此方法可能会根据您的 CORS 配置添加诸如 Access-Control-Allow-Origin、Access-Control-Allow-Methods 等头。
+        response.addHeader(FileConstants.CONTENT_TYPE_STR, contentTypeValue);
+            这行代码向响应添加了一个自定义头。
+            FileConstants.CONTENT_TYPE_STR 是代表内容类型头的常量： "Content-Type"。
+            contentTypeValue 是内容类型头的实际值，例如 "application/json"、"text/html"、"image/jpeg" 等。
+        response.setContentType(contentTypeValue);
+            这行代码设置了响应的内容类型。它类似于添加头，但此方法专门设置了 "Content-Type" 头。
+            对于客户端来说，知道发送的内容类型（例如 JSON、HTML、图像）非常重要，这样它就可以正确处理响应。
+        总体而言，这个方法确保响应中设置了必要的头，以便客户端正确处理，特别是在文件下载或 API 响应等场景中，内容类型和 CORS 可能对兼容性和安全性至关重要。
      */
     private void addCommonResponseHeader(HttpServletResponse response, String contentTypeValue) {
         response.reset();
