@@ -380,31 +380,33 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         return result;
     }
 
-//    /**
-//     * 获取面包屑列表
-//     * <p>
-//     * 1、获取用户所有文件夹信息
-//     * 2、拼接需要用到的面包屑的列表
-//     *
-//     * @param context
-//     * @return
-//     */
-//    @Override
-//    public List<BreadcrumbVO> getBreadcrumbs(QueryBreadcrumbsContext context) {
-//        List<RPanUserFile> folderRecords = queryFolderRecords(context.getUserId());
-//        Map<Long, BreadcrumbVO> prepareBreadcrumbVOMap = folderRecords.stream().map(BreadcrumbVO::transfer).collect(Collectors.toMap(BreadcrumbVO::getId, a -> a));
-//        BreadcrumbVO currentNode;
-//        Long fileId = context.getFileId();
-//        List<BreadcrumbVO> result = Lists.newLinkedList();
-//        do {
-//            currentNode = prepareBreadcrumbVOMap.get(fileId);
-//            if (Objects.nonNull(currentNode)) {
-//                result.add(0, currentNode);
-//                fileId = currentNode.getParentId();
-//            }
-//        } while (Objects.nonNull(currentNode));
-//        return result;
-//    }
+
+
+    /**
+     * 获取面包屑列表
+     * <p>
+     * 1、获取用户所有文件夹信息
+     * 2、拼接需要用到的面包屑的列表
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public List<BreadcrumbVO> getBreadcrumbs(QueryBreadcrumbsContext context) {
+        List<RPanUserFile> folderRecords = queryFolderRecords(context.getUserId());
+        Map<Long, BreadcrumbVO> prepareBreadcrumbVOMap = folderRecords.stream().map(BreadcrumbVO::transfer).collect(Collectors.toMap(BreadcrumbVO::getId, a -> a));
+        BreadcrumbVO currentNode;
+        Long fileId = context.getFileId();
+        List<BreadcrumbVO> result = Lists.newLinkedList();
+        do {
+            currentNode = prepareBreadcrumbVOMap.get(fileId);
+            if (Objects.nonNull(currentNode)) {
+                result.add(0, currentNode);
+                fileId = currentNode.getParentId();
+            }
+        } while (Objects.nonNull(currentNode));
+        return result;
+    }
 
     /**
      * 递归查询所有的子文件信息

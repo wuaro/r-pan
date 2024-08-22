@@ -616,6 +616,31 @@ public class FileTest {
         Assert.isTrue(CollectionUtils.isEmpty(result));
     }
 
+    /**
+     * 测试查询文件面包屑导航列表成功
+     */
+    @Test
+    public void testGetBreadcrumbsSuccess() {
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
+
+        CreateFolderContext context = new CreateFolderContext();
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+        context.setFolderName("folder-name-1");
+
+        Long folder1 = iUserFileService.createFolder(context);
+        Assert.notNull(folder1);
+
+        QueryBreadcrumbsContext queryBreadcrumbsContext = new QueryBreadcrumbsContext();
+        queryBreadcrumbsContext.setFileId(folder1);
+        queryBreadcrumbsContext.setUserId(userId);
+
+        List<BreadcrumbVO> result = iUserFileService.getBreadcrumbs(queryBreadcrumbsContext);
+        Assert.notEmpty(result);
+        Assert.isTrue(result.size() == 2);
+    }
+
 
     /************************************************private************************************************/
 
