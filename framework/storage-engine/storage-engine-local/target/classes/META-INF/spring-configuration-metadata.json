@@ -1,0 +1,25 @@
+{
+  "groups": [
+    {
+      "name": "com.wuaro.pan.storage.engine.local",
+      "type": "com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig",
+      "sourceType": "com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "com.wuaro.pan.storage.engine.local.root-file-chunk-path",
+      "type": "java.lang.String",
+      "description": "实际存放文件分片的路径的前缀",
+      "sourceType": "com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig"
+    },
+    {
+      "name": "com.wuaro.pan.storage.engine.local.root-file-path",
+      "type": "java.lang.String",
+      "description": "文件上传的根目录",
+      "sourceType": "com.wuaro.pan.storage.engine.local.config.LocalStorageEngineConfig",
+      "defaultValue": "@see com.wuaro.pan.core.utils.FileUtils.generateDefaultStoreFileRealPath"
+    }
+  ],
+  "hints": []
+}

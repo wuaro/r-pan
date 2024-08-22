@@ -1,4 +1,4 @@
-package com.wuaro.pan.server.common.event.search;//package com.imooc.pan.server.common.event.search;
+package com.wuaro.pan.server.common.listenner.search;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

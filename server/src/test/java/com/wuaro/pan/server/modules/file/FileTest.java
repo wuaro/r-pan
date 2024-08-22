@@ -589,6 +589,34 @@ public class FileTest {
         iUserFileService.copy(copyFileContext);
     }
 
+    /**
+     * 测试文件搜索成功
+     */
+    @Test
+    public void testSearchSuccess() {
+        Long userId = register();
+        UserInfoVO userInfoVO = info(userId);
+
+        CreateFolderContext context = new CreateFolderContext();
+        context.setParentId(userInfoVO.getRootFileId());
+        context.setUserId(userId);
+        context.setFolderName("folder-name-1");
+
+        Long folder1 = iUserFileService.createFolder(context);
+        Assert.notNull(folder1);
+
+        FileSearchContext fileSearchContext = new FileSearchContext();
+        fileSearchContext.setUserId(userId);
+        fileSearchContext.setKeyword("folder-name");
+        List<FileSearchResultVO> result = iUserFileService.search(fileSearchContext);
+        Assert.notEmpty(result);
+
+        fileSearchContext.setKeyword("name-1");
+        result = iUserFileService.search(fileSearchContext);
+        Assert.isTrue(CollectionUtils.isEmpty(result));
+    }
+
+
     /************************************************private************************************************/
 
     /**

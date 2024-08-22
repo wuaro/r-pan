@@ -8,6 +8,7 @@ import com.wuaro.pan.core.exception.RPanBusinessException;
 import com.wuaro.pan.core.utils.FileUtils;
 import com.wuaro.pan.core.utils.IdUtil;
 import com.wuaro.pan.server.common.event.file.DeleteFileEvent;
+import com.wuaro.pan.server.common.event.search.UserSearchEvent;
 import com.wuaro.pan.server.common.utils.HttpUtil;
 import com.wuaro.pan.server.modules.file.constants.FileConstants;
 import com.wuaro.pan.server.modules.file.context.*;
@@ -360,23 +361,24 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         doCopy(context);
     }
 
-//    /**
-//     * 文件列表搜索
-//     * <p>
-//     * 1、执行文件搜索
-//     * 2、拼装文件的父文件夹名称
-//     * 3、执行文件搜索后的后置动作
-//     *
-//     * @param context
-//     * @return
-//     */
-//    @Override
-//    public List<FileSearchResultVO> search(FileSearchContext context) {
-//        List<FileSearchResultVO> result = doSearch(context);
-//        fillParentFilename(result);
-//        afterSearch(context);
-//        return result;
-//    }
+
+    /**
+     * 文件列表搜索
+     * <p>
+     * 1、执行文件搜索
+     * 2、拼装文件的父文件夹名称
+     * 3、执行文件搜索后的后置动作
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public List<FileSearchResultVO> search(FileSearchContext context) {
+        List<FileSearchResultVO> result = doSearch(context);
+        fillParentFilename(result);
+        afterSearch(context);
+        return result;
+    }
 
 //    /**
 //     * 获取面包屑列表
@@ -495,14 +497,18 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         List<RPanUserFile> childRecords = list(queryWrapper);
         return childRecords;
     }
-//
-//    /**
-//     * 搜索的后置操作
-//     * <p>
-//     * 1、发布文件搜索的事件
-//     *
-//     * @param context
-//     */
+
+    /**
+     * 搜索的后置操作
+     * <p>
+     * 1、发布文件搜索的事件
+     *
+     * @param context
+     */
+    private void afterSearch(FileSearchContext context) {
+        UserSearchEvent event = new UserSearchEvent(this,context.getKeyword(),context.getUserId());
+        applicationContext.publishEvent(event);
+    }
 //    private void afterSearch(FileSearchContext context) {
 //        UserSearchEvent event = new UserSearchEvent(context.getKeyword(), context.getUserId());
 //        producer.sendMessage(PanChannels.USER_SEARCH_OUTPUT, event);
@@ -523,15 +529,15 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
         result.stream().forEach(vo -> vo.setParentFilename(fileId2filenameMap.get(vo.getParentId())));
     }
 
-//    /**
-//     * 搜索文件列表
-//     *
-//     * @param context
-//     * @return
-//     */
-//    private List<FileSearchResultVO> doSearch(FileSearchContext context) {
-//        return baseMapper.searchFile(context);
-//    }
+    /**
+     * 搜索文件列表
+     *
+     * @param context
+     * @return
+     */
+    private List<FileSearchResultVO> doSearch(FileSearchContext context) {
+        return baseMapper.searchFile(context);
+    }
 
     /**
      * 执行文件复制的动作

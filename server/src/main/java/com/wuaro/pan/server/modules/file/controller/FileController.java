@@ -1,5 +1,6 @@
 package com.wuaro.pan.server.modules.file.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.common.base.Splitter;
 import com.wuaro.pan.core.constants.RPanConstants;
 import com.wuaro.pan.core.response.R;
@@ -15,10 +16,7 @@ import com.wuaro.pan.server.modules.file.enums.DelFlagEnum;
 import com.wuaro.pan.server.modules.file.po.*;
 import com.wuaro.pan.server.modules.file.service.IUserFileService;
 //import com.wuaro.pan.server.modules.file.vo.*;
-import com.wuaro.pan.server.modules.file.vo.FileChunkUploadVO;
-import com.wuaro.pan.server.modules.file.vo.FolderTreeNodeVO;
-import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
-import com.wuaro.pan.server.modules.file.vo.UploadedChunksVO;
+import com.wuaro.pan.server.modules.file.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 //import org.apache.commons.lang3.StringUtils;
@@ -645,26 +643,26 @@ public class FileController {
         return R.success();
     }
 
-//    @ApiOperation(
-//            value = "文件搜索",
-//            notes = "该接口提供了文件搜索的功能",
-//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-//    )
-//    @GetMapping("file/search")
-//    public R<List<FileSearchResultVO>> search(@Validated FileSearchPO fileSearchPO) {
-//        FileSearchContext context = new FileSearchContext();
-//        context.setKeyword(fileSearchPO.getKeyword());
-//        context.setUserId(UserIdUtil.get());
-//        String fileTypes = fileSearchPO.getFileTypes();
-//        if (StringUtils.isNotBlank(fileTypes) && !Objects.equals(FileConstants.ALL_FILE_TYPE, fileTypes)) {
-//            List<Integer> fileTypeArray = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileTypes).stream().map(Integer::valueOf).collect(Collectors.toList());
-//            context.setFileTypeArray(fileTypeArray);
-//        }
-//        List<FileSearchResultVO> result = iUserFileService.search(context);
-//        return R.data(result);
-//    }
-//
+    @ApiOperation(
+            value = "文件搜索",
+            notes = "该接口提供了文件搜索的功能",
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @GetMapping("file/search")
+    public R<List<FileSearchResultVO>> search(@Validated FileSearchPO fileSearchPO) {
+        FileSearchContext context = new FileSearchContext();
+        context.setKeyword(fileSearchPO.getKeyword());
+        context.setUserId(UserIdUtil.get());
+        String fileTypes = fileSearchPO.getFileTypes();
+        if (StringUtils.isNotBlank(fileTypes) && !Objects.equals(FileConstants.ALL_FILE_TYPE, fileTypes)) {
+            List<Integer> fileTypeArray = Splitter.on(RPanConstants.COMMON_SEPARATOR).splitToList(fileTypes).stream().map(Integer::valueOf).collect(Collectors.toList());
+            context.setFileTypeArray(fileTypeArray);
+        }
+        List<FileSearchResultVO> result = iUserFileService.search(context);
+        return R.data(result);
+    }
+
 //    @ApiOperation(
 //            value = "查询面包屑列表",
 //            notes = "该接口提供了查询面包屑列表的功能",

@@ -1,8 +1,10 @@
 package com.wuaro.pan.server.modules.file.mapper;
 
+import com.wuaro.pan.server.modules.file.context.FileSearchContext;
 import com.wuaro.pan.server.modules.file.context.QueryFileListContext;
 import com.wuaro.pan.server.modules.file.entity.RPanUserFile;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.wuaro.pan.server.modules.file.vo.FileSearchResultVO;
 import com.wuaro.pan.server.modules.file.vo.RPanUserFileVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,4 +44,13 @@ public interface RPanUserFileMapper extends BaseMapper<RPanUserFile> {
         并将查询结果映射为 RPanUserFileVO 类型的对象列表返回。
      */
     List<RPanUserFileVO> selectFileList(@Param("param") QueryFileListContext context);
+
+    /**
+     * 文件搜索
+     *
+     * @param context
+     * @return
+     */
+    List<FileSearchResultVO> searchFile(@Param("param") FileSearchContext context);
+
 }

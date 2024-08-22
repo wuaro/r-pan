@@ -127,14 +127,14 @@ public interface IUserFileService extends IService<RPanUserFile> {
      */
     void copy(CopyFileContext context);
 
-//    /**
-//     * 文件列表搜索
-//     *
-//     * @param context
-//     * @return
-//     */
-//    List<FileSearchResultVO> search(FileSearchContext context);
-//
+    /**
+     * 文件列表搜索
+     *
+     * @param context
+     * @return
+     */
+    List<FileSearchResultVO> search(FileSearchContext context);
+
 //    /**
 //     * 获取面包屑列表
 //     *
@@ -166,6 +166,7 @@ public interface IUserFileService extends IService<RPanUserFile> {
      * @return
      */
     List<RPanUserFileVO> transferVOList(List<RPanUserFile> records);
+
 
 
 }
