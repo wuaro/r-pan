@@ -27,6 +27,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.wuaro.pan</groupId>-->
+<!--            <artifactId>r-pan-lock-core</artifactId>-->
+<!--            <version>1.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>
