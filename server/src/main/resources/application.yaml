@@ -1,0 +1,73 @@
+spring:
+  redis:
+    database: 1
+    host: 62.234.164.95
+  application:
+    name: r-pan-server
+  output:
+    ansi:
+      enabled: always
+  mvc:
+    servlet:
+      load-on-startup: 1
+  servlet:
+    multipart:
+      max-file-size: 3072MB
+      max-request-size: 3072MB
+
+
+
+  datasource:
+    username: root
+    password: wuaropassword
+    url: jdbc:mysql://127.0.0.1:3306/r_pan?characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+mybatis-plus:
+  mapper-locations: classpath:mappers/**/*.xml
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude: env,beans
+
+
+swagger2:
+  show: true
+  group-name: ${spring.application.name}
+  base-package: com.wuaro.pan
+  title: r-pan-server docs
+  description: r-pan-server docs
+  terms-of-service-url: http://127.0.0.1:${server.port}
+  contact-name: wuaro
+  contact-url: https://wuaro.github.io/
+  contact-email: 1139188981@qq.com
+  version: 1.0
+
+#com:
+#  wuaro:
+#    pan:
+#      storage:
+#        engine:
+#          fdfs:
+#            connect-timeout: 600
+#            tracker-list:
+#              - 62.234.164.95:22122
+#            group: group1
+
+
+com:
+    wuaro:
+        pan:
+            storage:
+                engine:
+                    oss:
+                        bucket-name: pan-wuaro-test-1
+                        endpoint: oss-cn-beijing.aliyuncs.com
+                        auto-create-bucket: true
