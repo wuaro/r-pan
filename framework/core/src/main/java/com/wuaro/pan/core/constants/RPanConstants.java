@@ -28,29 +28,30 @@ public interface RPanConstants {
     String SLASH_STR = "/";
 
     /**
-     * 公用0L
+     * Long 常量 0
      */
-    long ZERO_LONG = 0L;
+    Long ZERO_LONG = 0L;
 
     /**
-     * 公用0数字
+     * Integer 常量 0
      */
-    int ZERO_INT = 0;
+    Integer ZERO_INT = 0;
 
     /**
-     * 公用1数字
+     * Integer 常量 1
      */
-    int ONE_INT = 1;
+    Integer ONE_INT = 1;
 
     /**
-     * 公用2数字
+     * Integer 常量 2
      */
-    int TWO_INT = 2;
+    Integer TWO_INT = 2;
 
     /**
-     * 公用-1数字
+     * Integer 常量 -1
      */
-    int MINUS_ONE_INT = -1;
+    Integer MINUS_ONE_INT = -1;
+
 
     /**
      * 公用true字符串
