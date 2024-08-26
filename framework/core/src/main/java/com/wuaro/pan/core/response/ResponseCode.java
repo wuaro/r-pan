@@ -3,9 +3,13 @@ package com.wuaro.pan.core.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 项目公用返回状态码
+ */
 @AllArgsConstructor
 @Getter
 public enum ResponseCode {
+
     /**
      * 成功
      */
@@ -27,6 +31,18 @@ public enum ResponseCode {
      */
     ACCESS_DENIED(4, "ACCESS_DENIED"),
     /**
+     * 分享的文件丢失
+     */
+    SHARE_FILE_MISS(5, "分享的文件丢失"),
+    /**
+     * 分享已经被取消
+     */
+    SHARE_CANCELLED(6, "分享已经被取消"),
+    /**
+     * 分享已过期
+     */
+    SHARE_EXPIRE(7, "分享已过期"),
+    /**
      * 需要登录
      */
     NEED_LOGIN(10, "NEED_LOGIN");
@@ -37,7 +53,7 @@ public enum ResponseCode {
     private Integer code;
 
     /**
-     * 描述信息
+     * 状态描述
      */
     private String desc;
 

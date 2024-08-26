@@ -58,7 +58,7 @@ swagger2:
 #          fdfs:
 #            connect-timeout: 600
 #            tracker-list:
-#              - 62.234.164.95:22122
+#              - 62.234.164.95:22122 
 #            group: group1
 
 

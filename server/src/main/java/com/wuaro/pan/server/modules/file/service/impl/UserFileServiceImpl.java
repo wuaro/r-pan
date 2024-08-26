@@ -300,6 +300,24 @@ public class UserFileServiceImpl extends ServiceImpl<RPanUserFileMapper, RPanUse
     }
 
     /**
+     * 文件下载 不校验用户是否是否是上传用户
+     *
+     * @param context
+     */
+    @Override
+    public void downloadWithoutCheckUser(FileDownloadContext context) {
+        RPanUserFile record = getById(context.getFileId());
+        if (Objects.isNull(record)) {
+            throw new RPanBusinessException("当前文件记录不存在");
+        }
+        if (checkIsFolder(record)) {
+            throw new RPanBusinessException("文件夹暂不支持下载");
+        }
+        doDownload(record, context.getResponse());
+    }
+
+
+    /**
      * 文件预览
      * 1、参数校验：校验文件是否存在，文件是否属于该用户
      * 2、校验该文件是不是一个文件夹
