@@ -68,6 +68,8 @@ com:
             storage:
                 engine:
                     oss:
-                        bucket-name: pan-wuaro-test-1
-                        endpoint: oss-cn-beijing.aliyuncs.com
-                        auto-create-bucket: true
+                      bucket-name: pan-wuaro-test-1
+                      endpoint: oss-cn-beijing.aliyuncs.com
+                      auto-create-bucket: true
+                      access-key-id:
+                      access-key-secret:
